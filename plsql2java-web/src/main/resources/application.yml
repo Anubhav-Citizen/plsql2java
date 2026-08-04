@@ -1,0 +1,34 @@
+server:
+  port: ${SERVER_PORT:8080}
+
+spring:
+  application:
+    name: plsql2java-web
+  servlet:
+    multipart:
+      max-file-size: ${PLSQL2JAVA_MAX_FILE_SIZE:50MB}
+      max-request-size: 55MB
+  thymeleaf:
+    cache: false
+  security:
+    user:
+      name: ${SPRING_SECURITY_USER_NAME:admin}
+      password: ${SPRING_SECURITY_USER_PASSWORD:changeme}
+
+plsql2java:
+  output:
+    dir: ${PLSQL2JAVA_OUTPUT_DIR:plsql2java-output}
+  upload:
+    sandbox-dir: ${java.io.tmpdir}/plsql2java
+
+logging:
+  level:
+    root: WARN
+    com.plsql2java.web: INFO
+    com.plsql2java.orchestration: WARN
+
+springdoc:
+  api-docs:
+    path: /v3/api-docs
+  swagger-ui:
+    path: /swagger-ui.html

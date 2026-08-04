@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{layout :: head('Migration Report')}"></head>
+<body>
+<nav th:replace="~{layout :: navbar}"></nav>
+<div class="container">
+    <h2 data-testid="report-title">Migration Report</h2>
+    <p>Job ID: <code th:text="${jobId}"></code></p>
+
+    <div class="mb-3">
+        <a th:href="@{/api/migrations/{jobId}/report/download(jobId=${jobId}, format='html')}"
+           class="btn btn-outline-primary me-2" data-testid="download-html-button">
+            Download HTML Report
+        </a>
+        <a th:href="@{/api/migrations/{jobId}/report/download(jobId=${jobId}, format='md')}"
+           class="btn btn-outline-secondary me-2" data-testid="download-md-button">
+            Download Markdown Report
+        </a>
+        <a th:href="@{/}" class="btn btn-link" data-testid="back-home-link">Back to Home</a>
+    </div>
+
+    <div class="card">
+        <div class="card-body" data-testid="report-content"
+             th:utext="${reportHtml} ?: 'Report not available.'"></div>
+    </div>
+</div>
+<script th:src="@{/js/bootstrap.bundle.min.js}"></script>
+</body>
+</html>

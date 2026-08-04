@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{layout :: head('Home')}"></head>
+<body>
+<nav th:replace="~{layout :: navbar}"></nav>
+<div class="container">
+    <h1 class="mb-4">Oracle PL/SQL Migration</h1>
+
+    <!-- Tab selector -->
+    <ul class="nav nav-tabs mb-4" role="tablist">
+        <li class="nav-item">
+            <button class="nav-link active" data-bs-toggle="tab" data-bs-target="#upload-tab"
+                    data-testid="tab-upload">DDL File Upload</button>
+        </li>
+        <li class="nav-item">
+            <button class="nav-link" data-bs-toggle="tab" data-bs-target="#jdbc-tab"
+                    data-testid="tab-jdbc">JDBC Connection</button>
+        </li>
+    </ul>
+
+    <div class="tab-content">
+        <!-- DDL Upload Tab -->
+        <div class="tab-pane fade show active" id="upload-tab">
+            <form id="uploadForm" data-testid="ddl-upload-form">
+                <div class="mb-3">
+                    <label for="ddlFile" class="form-label">DDL SQL File (.sql, max 50MB)</label>
+                    <input type="file" class="form-control" id="ddlFile" accept=".sql"
+                           data-testid="ddl-file-input" required/>
+                    <div class="invalid-feedback" role="alert">Please select a .sql file.</div>
+                </div>
+                <div class="mb-3">
+                    <label class="form-label">Mode</label>
+                    <select class="form-select" id="modeSelect" data-testid="mode-selector">
+                        <option value="analyze">Analyze only</option>
+                        <option value="generate">Full generation</option>
+                    </select>
+                </div>
+                <div class="mb-3" id="packageGroup">
+                    <label for="targetPackage" class="form-label">Target Java Package</label>
+                    <input type="text" class="form-control" id="targetPackage"
+                           placeholder="com.example.migrated" data-testid="target-package-input"/>
+                </div>
+                <button type="submit" class="btn btn-primary" data-testid="upload-submit-button">
+                    Start Migration
+                </button>
+            </form>
+        </div>
+
+        <!-- JDBC Tab -->
+        <div class="tab-pane fade" id="jdbc-tab">
+            <form id="jdbcForm" data-testid="jdbc-config-form">
+                <div class="mb-3">
+                    <label for="jdbcUrl" class="form-label">JDBC URL</label>
+                    <input type="text" class="form-control" id="jdbcUrl"
+                           placeholder="jdbc:oracle:thin:@host:1521:XE"
+                           data-testid="jdbc-url-input" required/>
+                </div>
+                <div class="mb-3">
+                    <label for="jdbcUser" class="form-label">Username</label>
+                    <input type="text" class="form-control" id="jdbcUser"
+                           data-testid="jdbc-user-input" required/>
+                </div>
+                <div class="mb-3">
+                    <label for="jdbcPassword" class="form-label">Password</label>
+                    <input type="password" class="form-control" id="jdbcPassword"
+                           data-testid="jdbc-password-input" required/>
+                </div>
+                <div class="mb-3">
+                    <label for="jdbcPackage" class="form-label">Target Java Package</label>
+                    <input type="text" class="form-control" id="jdbcPackage"
+                           placeholder="com.example.migrated" data-testid="target-package-input"/>
+                </div>
+                <div class="mb-3">
+                    <label for="confidenceThreshold" class="form-label">Confidence Threshold (0.0–1.0)</label>
+                    <input type="number" class="form-control" id="confidenceThreshold"
+                           value="0.7" min="0" max="1" step="0.1"
+                           data-testid="confidence-threshold-input"/>
+                </div>
+                <button type="submit" class="btn btn-primary" data-testid="jdbc-config-submit-button">
+                    Start Migration
+                </button>
+            </form>
+        </div>
+    </div>
+</div>
+<script th:src="@{/js/bootstrap.bundle.min.js}"></script>
+<script th:src="@{/js/app.js}"></script>
+</body>
+</html>

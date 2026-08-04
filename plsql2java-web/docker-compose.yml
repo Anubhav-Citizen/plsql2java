@@ -1,0 +1,22 @@
+version: '3.8'
+
+services:
+  plsql2java-web:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "8080:8080"
+    environment:
+      - SPRING_SECURITY_USER_NAME=${ADMIN_USERNAME:-admin}
+      - SPRING_SECURITY_USER_PASSWORD=${ADMIN_PASSWORD:?ADMIN_PASSWORD must be set}
+      - PLSQL2JAVA_OUTPUT_DIR=/app/output
+      - SERVER_PORT=8080
+    volumes:
+      - ./output:/app/output
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "wget", "-qO-", "http://localhost:8080/"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
