@@ -13,6 +13,7 @@ public class MigrationConfig {
     private Path outputDir;
     private int confidenceThreshold = 70;
     private String schemaName;
+    private String targetPackage;
 
     public MigrationConfig() {}
 
@@ -33,6 +34,9 @@ public class MigrationConfig {
 
     public String getSchemaName() { return schemaName; }
     public void setSchemaName(String schemaName) { this.schemaName = schemaName; }
+
+    public String getTargetPackage() { return targetPackage; }
+    public void setTargetPackage(String targetPackage) { this.targetPackage = targetPackage; }
 
     public boolean isJdbcMode() { return jdbcConfig != null; }
     public boolean isFileMode() { return !ddlFiles.isEmpty(); }
