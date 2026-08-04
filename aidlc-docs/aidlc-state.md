@@ -4,7 +4,7 @@
 - **Project Name**: plsql2java - Oracle PL/SQL Legacy Modernization Platform
 - **Project Type**: Greenfield
 - **Start Date**: 2025-01-01T00:00:00Z
-- **Current Stage**: CONSTRUCTION - Unit 1 Code Generation COMPLETE
+- **Current Stage**: CONSTRUCTION - Unit 2 Code Generation COMPLETE
 
 ## Workspace State
 - **Existing Code**: No
@@ -33,8 +33,8 @@
 
 ### CONSTRUCTION PHASE
 - [x] Unit 1 - Discovery & Dependency — COMPLETED
-- [ ] Unit 2 - Translation Engine — NEXT
-- [ ] Unit 3 - Code Generator + Scoring + Reporting — PENDING
+- [x] Unit 2 - Translation Engine — COMPLETED
+- [ ] Unit 3 - Code Generator + Scoring + Reporting — NEXT
 - [ ] Unit 4 - Migration Orchestrator — PENDING
 - [ ] Unit 5 - CLI Delivery — PENDING
 - [ ] Unit 6 - Web Application Delivery — PENDING

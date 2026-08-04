@@ -1,0 +1,22 @@
+package com.plsql2java.translation.model;
+
+public enum ConstructType {
+    VARIABLE_DECLARATION,
+    IF_ELSIF_ELSE,
+    CASE_STATEMENT,
+    LOOP,
+    WHILE_LOOP,
+    FOR_LOOP,
+    EXCEPTION_HANDLER,
+    EXPLICIT_CURSOR,
+    IMPLICIT_CURSOR_FOR,
+    BULK_COLLECT,
+    FORALL,
+    FORALL_SAVE_EXCEPTIONS,
+    BUILTIN_FUNCTION,
+    DBMS_OUTPUT,
+    RAISE,
+    GOTO,
+    REF_CURSOR,
+    UNKNOWN
+}
