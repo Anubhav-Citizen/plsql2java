@@ -1,0 +1,17 @@
+{
+  "migrationId" : "1e0af3aa-56be-4a81-9a7d-a99cdc35328f",
+  "schemaName" : "UNKNOWN",
+  "discoveryMode" : "FILE",
+  "objects" : [ {
+    "name" : "EMP_PKG",
+    "type" : "PACKAGE",
+    "schema" : "UNKNOWN",
+    "sourceSpec" : "CREATE OR REPLACE PACKAGE EMP_PKG AS\n  PROCEDURE GET_EMPLOYEE(p_id IN NUMBER, p_name OUT VARCHAR2)",
+    "sourceBody" : "CREATE OR REPLACE PACKAGE BODY EMP_PKG AS\n  PROCEDURE GET_EMPLOYEE(p_id IN NUMBER, p_name OUT VARCHAR2) IS\n  BEGIN\n    SELECT FIRST_NAME INTO p_name FROM EMPLOYEES WHERE EMPLOYEE_ID = p_id",
+    "hasCompilationErrors" : false,
+    "lineCount" : 2
+  } ],
+  "errors" : [ ],
+  "sourceFiles" : [ "sample-package.sql" ],
+  "discoveredAt" : "2026-08-06T12:52:05.399885400Z"
+}
