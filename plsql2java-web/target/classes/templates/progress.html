@@ -5,7 +5,7 @@
 <nav th:replace="~{layout :: navbar}"></nav>
 <div class="container">
     <h2>Migration Progress</h2>
-    <p>Job ID: <code data-testid="job-id-display" th:text="${jobId}"></code></p>
+    <p>Job ID: <code data-testid="job-id-display" th:text="${jobId}" th:attr="data-job-id=${jobId}" id="jobIdDisplay"></code></p>
 
     <div class="mb-3">
         <span class="badge bg-secondary" id="statusBadge" data-testid="job-status-badge"
@@ -36,8 +36,8 @@
          data-testid="error-alert"></div>
 </div>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
-<script th:inline="javascript">
-    const jobId = /*[[${jobId}]]*/ '';
+<script>
+    const jobId = document.getElementById('jobIdDisplay').getAttribute('data-job-id');
     const evtSource = new EventSource('/api/migrations/' + jobId + '/events');
     const log = document.getElementById('progressLog');
     const bar = document.getElementById('progressBar');
@@ -55,7 +55,7 @@
         log.scrollTop = log.scrollHeight;
     });
 
-    evtSource.addEventListener('complete', () => {
+    evtSource.addEventListener('complete', (e) => {
         evtSource.close();
         badge.textContent = 'COMPLETE';
         badge.className = 'badge bg-success';
@@ -67,6 +67,9 @@
     });
 
     evtSource.addEventListener('error', (e) => {
+        // Only treat as migration failure if the server sent an explicit error event with data.
+        // Connection-level errors (e.g. network blip) have no e.data — ignore those.
+        if (!e.data) return;
         evtSource.close();
         badge.textContent = 'FAILED';
         badge.className = 'badge bg-danger';
@@ -76,6 +79,32 @@
         errDiv.textContent = 'Migration failed. Please check the logs.';
         errDiv.classList.remove('d-none');
     });
+
+    // Fallback: poll job status if SSE connection drops without a terminal event
+    evtSource.onerror = (e) => {
+        if (evtSource.readyState === EventSource.CLOSED) return;
+        // Connection dropped — poll status endpoint to check if job already finished
+        setTimeout(() => {
+            fetch('/api/migrations/' + jobId + '/status')
+                .then(r => r.json())
+                .then(s => {
+                    if (s.status === 'COMPLETED' || s.status === 'PARTIAL') {
+                        badge.textContent = 'COMPLETE';
+                        badge.className = 'badge bg-success';
+                        bar.style.width = '100%'; bar.textContent = '100%';
+                        bar.classList.remove('progress-bar-animated');
+                        document.getElementById('actionButtons').classList.remove('d-none');
+                        log.value += '\n[DONE] Migration complete.\n';
+                        evtSource.close();
+                    } else if (s.status === 'FAILED') {
+                        badge.textContent = 'FAILED'; badge.className = 'badge bg-danger';
+                        bar.classList.remove('progress-bar-animated'); bar.classList.add('bg-danger');
+                        document.getElementById('errorAlert').classList.remove('d-none');
+                        evtSource.close();
+                    }
+                }).catch(() => {});
+        }, 500);
+    };
 </script>
 </body>
 </html>
