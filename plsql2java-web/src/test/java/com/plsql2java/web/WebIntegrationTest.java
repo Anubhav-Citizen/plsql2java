@@ -64,7 +64,7 @@ class WebIntegrationTest {
     @Test
     void homePageRedirectsToLogin_whenUnauthenticated() throws Exception {
         mockMvc.perform(get("/"))
-                .andExpect(status().isOk()); // '/' is publicly accessible per SecurityConfig
+                .andExpect(status().is3xxRedirection()); // '/' now requires authentication
     }
 
     @Test

@@ -20,7 +20,8 @@ document.addEventListener('DOMContentLoaded', () => {
             formData.append('file', fileInput.files[0]);
 
             const uploadResp = await fetch('/api/migrations/upload', { method: 'POST', body: formData });
-            if (!uploadResp.ok) { alert('Upload failed'); return; }
+            if (uploadResp.status === 401 || uploadResp.status === 403) { window.location.href = '/login'; return; }
+            if (!uploadResp.ok) { alert('Upload failed: ' + uploadResp.status); return; }
             const { uploadId } = await uploadResp.json();
 
             let jobId;
