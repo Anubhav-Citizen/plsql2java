@@ -234,12 +234,4 @@ idList
     : ID (COMMA ID)*
     ;
 
-TYPE    : [Tt][Yy][Pp][Ee];
-ROWTYPE : [Rr][Oo][Ww][Tt][Yy][Pp][Ee];
-BODY    : [Bb][Oo][Dd][Yy];
-DEFAULT : [Dd][Ee][Ff][Aa][Uu][Ll][Tt];
-OUT     : [Oo][Uu][Tt];
-VALUES  : [Vv][Aa][Ll][Uu][Ee][Ss];
-FROM    : [Ff][Rr][Oo][Mm];
-WHERE   : [Ww][Hh][Ee][Rr][Ee];
-SET     : [Ss][Ee][Tt];
+

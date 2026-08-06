@@ -1,0 +1,8 @@
+com\plsql2java\translation\ExceptionCursorBulkRulesTest.class
+com\plsql2java\translation\PlSqlTranslationEngineTest.class
+com\plsql2java\translation\TranslationRuleRegistryTest.class
+com\plsql2java\translation\JavaIRTest.class
+com\plsql2java\translation\TranslationResultTest.class
+com\plsql2java\translation\ControlFlowRulesTest.class
+com\plsql2java\translation\BuiltinFunctionAndDbmsOutputRulesTest.class
+com\plsql2java\translation\TranslationRuleRegistryTest$StubRule.class

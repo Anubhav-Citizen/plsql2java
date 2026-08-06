@@ -38,7 +38,7 @@ class OracleDiscoveryServiceJdbcTest {
         JdbcConfig config = new JdbcConfig("jdbc:oracle:thin:@localhost:1521:XE", "USER", "pass");
         when(connectionManager.connect(config)).thenReturn(conn);
         when(dictionaryReader.readObjectList(conn, "USER"))
-                .thenReturn(List.of(new String[]{"MY_PROC", "PROCEDURE"}));
+                .thenReturn(List.<String[]>of(new String[]{"MY_PROC", "PROCEDURE"}));
         when(dictionaryReader.readSource(conn, "USER", "MY_PROC", "PROCEDURE"))
                 .thenReturn("CREATE OR REPLACE PROCEDURE MY_PROC IS BEGIN NULL; END;");
         when(dictionaryReader.hasCompilationErrors(conn, "USER", "MY_PROC", "PROCEDURE"))

@@ -1,5 +1,7 @@
 package com.plsql2java.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 public class OracleObject {
 
     private String name;
@@ -45,6 +47,7 @@ public class OracleObject {
     public void setLineCount(int lineCount) { this.lineCount = lineCount; }
 
     /** Returns the full source (spec + body if present). */
+    @JsonIgnore
     public String getFullSource() {
         if (sourceBody != null && !sourceBody.isBlank()) {
             return sourceSpec + "\n" + sourceBody;

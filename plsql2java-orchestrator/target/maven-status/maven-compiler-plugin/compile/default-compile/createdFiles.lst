@@ -1,0 +1,12 @@
+com\plsql2java\orchestration\model\MigrationJob.class
+com\plsql2java\orchestration\OrchestratorException.class
+com\plsql2java\orchestration\model\AnalysisResult.class
+com\plsql2java\orchestration\model\OperationMode.class
+com\plsql2java\orchestration\event\ProgressEventBus$MigrationProgressListener.class
+com\plsql2java\orchestration\model\MigrationResult.class
+com\plsql2java\orchestration\model\PipelineStage.class
+com\plsql2java\orchestration\event\ProgressEventBus.class
+com\plsql2java\orchestration\OrchestratorAutoConfiguration.class
+com\plsql2java\orchestration\MigrationOrchestratorService.class
+com\plsql2java\orchestration\model\MigrationProgress.class
+com\plsql2java\orchestration\model\MigrationJobStatus.class

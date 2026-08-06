@@ -1,0 +1,13 @@
+spring:
+  main:
+    banner-mode: off
+    web-application-type: none
+
+logging:
+  level:
+    root: WARN
+    com.plsql2java.cli: INFO
+    com.plsql2java.orchestration: WARN
+    com.plsql2java.discovery: WARN
+    com.plsql2java.translation: WARN
+    com.plsql2java.codegen: WARN

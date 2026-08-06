@@ -74,7 +74,7 @@ public class JavaIRAssembler {
         List<String> sortedImports = deduplicateAndSort(imports);
 
         String rawSource = buildRawSource(targetPackage, sortedImports, className,
-                fields, List.of(method), object.hasCompilationErrors());
+                fields, List.of(method), object.isHasCompilationErrors());
 
         return new JavaIR(object.getName(), targetPackage, className,
                 sortedImports, fields, List.of(method), rawSource);
@@ -122,7 +122,7 @@ public class JavaIRAssembler {
         return sb.toString();
     }
 
-    static String toPascalCase(String oracleName) {
+    public static String toPascalCase(String oracleName) {
         if (oracleName == null || oracleName.isBlank()) return "Unknown";
         String[] parts = oracleName.split("[_\\s]+");
         StringBuilder sb = new StringBuilder();
