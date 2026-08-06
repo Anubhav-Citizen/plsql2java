@@ -21,6 +21,11 @@ public class MigrationViewController {
         return "index";
     }
 
+    @GetMapping("/login")
+    public String login() {
+        return "login";
+    }
+
     @GetMapping("/progress/{jobId}")
     public String progress(@PathVariable String jobId, Model model) {
         MigrationJobState state = jobRegistry.getOrThrow(jobId);
