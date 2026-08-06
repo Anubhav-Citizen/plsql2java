@@ -15,6 +15,11 @@ public class WebProgressListener implements MigrationProgressListener {
 
     @Override
     public void onProgress(MigrationProgress progress) {
-        registry.emit(jobId, "progress", progress);
+        registry.emit(jobId, "progress", new ProgressPayload(
+                progress.getStage() != null ? progress.getStage().name() : "",
+                progress.getPct(),
+                progress.getMessage()));
     }
+
+    private record ProgressPayload(String stage, int pct, String message) {}
 }

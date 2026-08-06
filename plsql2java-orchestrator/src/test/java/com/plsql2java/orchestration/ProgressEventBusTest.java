@@ -27,7 +27,7 @@ class ProgressEventBusTest {
         bus.register(received::add);
         bus.register(received::add);
 
-        bus.emit(MigrationProgress.stageStart("m1", PipelineStage.DISCOVERY));
+        bus.emit(MigrationProgress.stageStart("m1", PipelineStage.DISCOVERY, 5));
         assertThat(received).hasSize(2);
     }
 
@@ -38,7 +38,7 @@ class ProgressEventBusTest {
         bus.register(received::add);
 
         assertThatNoException().isThrownBy(() ->
-                bus.emit(MigrationProgress.stageStart("m1", PipelineStage.TRANSLATION)));
+                bus.emit(MigrationProgress.stageStart("m1", PipelineStage.TRANSLATION, 20)));
         assertThat(received).hasSize(1);
     }
 
@@ -49,13 +49,13 @@ class ProgressEventBusTest {
         bus.register(listener);
         bus.unregister(listener);
 
-        bus.emit(MigrationProgress.stageStart("m1", PipelineStage.COMPLETE));
+        bus.emit(MigrationProgress.stageStart("m1", PipelineStage.COMPLETE, 99));
         assertThat(received).isEmpty();
     }
 
     @Test
     void emit_noListeners_doesNotThrow() {
         assertThatNoException().isThrownBy(() ->
-                bus.emit(MigrationProgress.stageStart("m1", PipelineStage.DISCOVERY)));
+                bus.emit(MigrationProgress.stageStart("m1", PipelineStage.DISCOVERY, 5)));
     }
 }

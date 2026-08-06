@@ -7,6 +7,7 @@ C:\project\repo\plsql2java\plsql2java-web\src\main\java\com\plsql2java\web\contr
 C:\project\repo\plsql2java\plsql2java-web\src\main\java\com\plsql2java\web\controller\MigrationViewController.java
 C:\project\repo\plsql2java\plsql2java-web\src\main\java\com\plsql2java\web\model\UploadedFile.java
 C:\project\repo\plsql2java\plsql2java-web\src\main\java\com\plsql2java\web\controller\MigrationController.java
+C:\project\repo\plsql2java\plsql2java-web\src\main\java\com\plsql2java\web\service\MigrationJobRunner.java
 C:\project\repo\plsql2java\plsql2java-web\src\main\java\com\plsql2java\web\service\CredentialStore.java
 C:\project\repo\plsql2java\plsql2java-web\src\main\java\com\plsql2java\web\service\MigrationJobRegistry.java
 C:\project\repo\plsql2java\plsql2java-web\src\main\java\com\plsql2java\web\service\MigrationJobService.java
