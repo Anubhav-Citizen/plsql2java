@@ -47,7 +47,10 @@ class MigrationOrchestratorIntegrationTest {
                 new DependencyGraphBuilder(), new CycleDetector(), new TopologicalSorter());
 
         TranslationRuleRegistry registry = new TranslationRuleRegistry();
-        new TranslationRuleRegistryInitializer(registry, new TranslationMappingLoader()).init();
+        com.fasterxml.jackson.databind.ObjectMapper objectMapper = new com.fasterxml.jackson.databind.ObjectMapper();
+        TranslationMappingLoader mappingLoader = new TranslationMappingLoader(objectMapper);
+        mappingLoader.load();
+        new TranslationRuleRegistryInitializer(registry, new java.util.ArrayList<>()).init();
         JavaIRAssembler assembler = new JavaIRAssembler();
         com.plsql2java.translation.engine.PlSqlTranslationEngine translationEngine =
                 new com.plsql2java.translation.engine.PlSqlTranslationEngine(registry, assembler);

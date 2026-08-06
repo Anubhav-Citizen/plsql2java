@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{layout :: head('Migration Progress')}"></head>
+<body>
+<nav th:replace="~{layout :: navbar}"></nav>
+<div class="container">
+    <h2>Migration Progress</h2>
+    <p>Job ID: <code data-testid="job-id-display" th:text="${jobId}"></code></p>
+
+    <div class="mb-3">
+        <span class="badge bg-secondary" id="statusBadge" data-testid="job-status-badge"
+              th:text="${status}">PENDING</span>
+        <span id="stageLabel" class="ms-2 text-muted" data-testid="current-stage-label"></span>
+    </div>
+
+    <div class="progress mb-3" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0">
+        <div class="progress-bar progress-bar-striped progress-bar-animated"
+             id="progressBar" data-testid="progress-bar" style="width: 0%">0%</div>
+    </div>
+
+    <textarea class="form-control font-monospace mb-3" id="progressLog"
+              data-testid="progress-log" rows="12" readonly></textarea>
+
+    <div id="actionButtons" class="d-none">
+        <a th:href="@{/api/migrations/{jobId}/download(jobId=${jobId})}"
+           class="btn btn-success me-2" data-testid="download-button">
+            Download Generated Project (ZIP)
+        </a>
+        <a th:href="@{/report/{jobId}(jobId=${jobId})}"
+           class="btn btn-info" data-testid="view-report-button">
+            View Migration Report
+        </a>
+    </div>
+
+    <div id="errorAlert" class="alert alert-danger d-none" role="alert"
+         data-testid="error-alert"></div>
+</div>
+<script th:src="@{/js/bootstrap.bundle.min.js}"></script>
+<script th:inline="javascript">
+    const jobId = /*[[${jobId}]]*/ '';
+    const evtSource = new EventSource('/api/migrations/' + jobId + '/events');
+    const log = document.getElementById('progressLog');
+    const bar = document.getElementById('progressBar');
+    const badge = document.getElementById('statusBadge');
+    const stage = document.getElementById('stageLabel');
+
+    evtSource.addEventListener('progress', (e) => {
+        const data = JSON.parse(e.data);
+        const pct = data.pct || 0;
+        bar.style.width = pct + '%';
+        bar.textContent = pct + '%';
+        bar.setAttribute('aria-valuenow', pct);
+        if (data.stage) stage.textContent = data.stage;
+        if (data.message) log.value += '[' + data.stage + '] ' + data.message + '\n';
+        log.scrollTop = log.scrollHeight;
+    });
+
+    evtSource.addEventListener('complete', () => {
+        evtSource.close();
+        badge.textContent = 'COMPLETE';
+        badge.className = 'badge bg-success';
+        bar.style.width = '100%';
+        bar.textContent = '100%';
+        bar.classList.remove('progress-bar-animated');
+        document.getElementById('actionButtons').classList.remove('d-none');
+        log.value += '\n[DONE] Migration complete.\n';
+    });
+
+    evtSource.addEventListener('error', (e) => {
+        evtSource.close();
+        badge.textContent = 'FAILED';
+        badge.className = 'badge bg-danger';
+        bar.classList.remove('progress-bar-animated');
+        bar.classList.add('bg-danger');
+        const errDiv = document.getElementById('errorAlert');
+        errDiv.textContent = 'Migration failed. Please check the logs.';
+        errDiv.classList.remove('d-none');
+    });
+</script>
+</body>
+</html>

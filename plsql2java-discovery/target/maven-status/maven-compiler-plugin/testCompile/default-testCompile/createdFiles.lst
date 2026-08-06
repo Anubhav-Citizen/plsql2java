@@ -1,0 +1,10 @@
+com\plsql2java\dependency\TopologicalSorterTest.class
+com\plsql2java\dependency\CycleDetectorTest.class
+com\plsql2java\discovery\OracleDiscoveryServiceFileTest.class
+com\plsql2java\discovery\file\DdlFileParserTest.class
+com\plsql2java\dependency\DependencyAnalyzerServiceTest.class
+com\plsql2java\model\OracleObjectTest.class
+com\plsql2java\discovery\ResultPersistenceServiceTest.class
+com\plsql2java\model\DependencyGraphTest.class
+com\plsql2java\discovery\jdbc\OracleDataDictionaryReaderTest.class
+com\plsql2java\discovery\OracleDiscoveryServiceJdbcTest.class

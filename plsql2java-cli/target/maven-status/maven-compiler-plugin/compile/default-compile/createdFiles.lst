@@ -1,0 +1,9 @@
+com\plsql2java\cli\command\GenerateCommand.class
+com\plsql2java\cli\command\AnalyzeCommand.class
+com\plsql2java\cli\config\CliConfig.class
+com\plsql2java\cli\ExitCode.class
+com\plsql2java\cli\config\ConfigLoader.class
+com\plsql2java\cli\PlSql2JavaCli.class
+com\plsql2java\cli\progress\CliProgressListener.class
+com\plsql2java\cli\config\MigrationConfigMapper.class
+com\plsql2java\cli\command\ReportCommand.class

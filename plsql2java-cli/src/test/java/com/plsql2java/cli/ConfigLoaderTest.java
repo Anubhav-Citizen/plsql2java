@@ -22,14 +22,11 @@ class ConfigLoaderTest {
     void load_parsesYamlConfig() throws IOException {
         Path configFile = tempDir.resolve("config.yml");
         Files.writeString(configFile, """
-                oracle:
-                  jdbcUrl: jdbc:oracle:thin:@host:1521:XE
-                  jdbcUser: scott
-                output:
-                  directory: ./output
-                  targetPackage: com.example
-                migration:
-                  confidenceThreshold: 0.8
+                jdbcUrl: jdbc:oracle:thin:@host:1521:XE
+                jdbcUser: scott
+                outputDir: ./output
+                targetPackage: com.example
+                confidenceThreshold: 0.8
                 """);
 
         CliConfig config = loader.load(configFile);

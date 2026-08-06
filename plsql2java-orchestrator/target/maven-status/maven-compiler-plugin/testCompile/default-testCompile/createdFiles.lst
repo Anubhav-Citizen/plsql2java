@@ -1,0 +1,5 @@
+com\plsql2java\orchestration\MigrationOrchestratorServiceTest.class
+com\plsql2java\orchestration\MigrationOrchestratorIntegrationTest.class
+com\plsql2java\orchestration\ProgressEventBusTest.class
+com\plsql2java\orchestration\MigrationResultTest.class
+com\plsql2java\orchestration\MigrationProgressTest.class

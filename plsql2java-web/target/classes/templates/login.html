@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{layout :: head('Login')}"></head>
+<body>
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-md-4">
+            <h2 class="mb-4 text-center">plsql2java Login</h2>
+            <div th:if="${param.error}" class="alert alert-danger" role="alert">
+                Invalid username or password.
+            </div>
+            <div th:if="${param.logout}" class="alert alert-info" role="alert">
+                You have been logged out.
+            </div>
+            <form th:action="@{/login}" method="post" data-testid="login-form">
+                <div class="mb-3">
+                    <label for="username" class="form-label">Username</label>
+                    <input type="text" class="form-control" id="username" name="username"
+                           data-testid="login-username-input" required autofocus/>
+                </div>
+                <div class="mb-3">
+                    <label for="password" class="form-label">Password</label>
+                    <input type="password" class="form-control" id="password" name="password"
+                           data-testid="login-password-input" required/>
+                </div>
+                <button type="submit" class="btn btn-primary w-100"
+                        data-testid="login-submit-button">Sign In</button>
+            </form>
+        </div>
+    </div>
+</div>
+<script th:src="@{/js/bootstrap.bundle.min.js}"></script>
+</body>
+</html>

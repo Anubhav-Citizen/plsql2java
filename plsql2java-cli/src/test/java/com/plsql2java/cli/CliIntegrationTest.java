@@ -32,8 +32,8 @@ import static org.mockito.Mockito.when;
 class CliIntegrationTest {
 
     @MockBean MigrationOrchestratorService orchestrator;
+    @MockBean ProgressEventBus eventBus;
     @Autowired ConfigLoader configLoader;
-    @Autowired ProgressEventBus eventBus;
 
     @TempDir Path tempDir;
 

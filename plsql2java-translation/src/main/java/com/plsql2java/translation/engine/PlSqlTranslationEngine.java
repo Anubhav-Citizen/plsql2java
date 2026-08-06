@@ -89,21 +89,15 @@ public class PlSqlTranslationEngine {
         int total = objects.size();
         for (int i = 0; i < total; i++) {
             OracleObject object = objects.get(i);
-            listener.onProgress(ProgressEvent.builder()
-                    .migrationId("translation")
-                    .stage(ProgressStage.TRANSLATION)
+            listener.onProgress(ProgressEvent.builder("translation", ProgressStage.TRANSLATION)
                     .objectName(object.getName())
-                    .processedCount(i)
-                    .totalCount(total)
+                    .processed(i, total)
                     .message("Translating: " + object.getName())
                     .build());
             results.add(translate(object));
         }
-        listener.onProgress(ProgressEvent.builder()
-                .migrationId("translation")
-                .stage(ProgressStage.TRANSLATION)
-                .processedCount(total)
-                .totalCount(total)
+        listener.onProgress(ProgressEvent.builder("translation", ProgressStage.TRANSLATION)
+                .processed(total, total)
                 .message("Translation complete")
                 .build());
         return results;

@@ -1,0 +1,7 @@
+com\plsql2java\codegen\CodeGenerationIntegrationTest.class
+com\plsql2java\reporting\MigrationReportGeneratorServiceTest.class
+com\plsql2java\codegen\JavaCodeGeneratorServiceTest.class
+com\plsql2java\codegen\GeneratedProjectTest.class
+com\plsql2java\scoring\ConfidenceScorerServiceTest.class
+com\plsql2java\scoring\ConfidenceReportTest.class
+com\plsql2java\reporting\TraceabilityMatrixTest.class
