@@ -74,7 +74,7 @@ public class MigrationReportGeneratorService {
             if (tr == null || tr.getJavaIR() == null) {
                 status = TraceabilityStatus.SKIPPED;
             } else {
-                javaClass = tr.getJavaIR().getClassName() + "Service";
+                javaClass = domainName(obj.getName()) + "Service";
                 methods = tr.getJavaIR().getMethods().stream()
                         .map(m -> m.getMethodName()).collect(Collectors.toList());
                 status = switch (tr.getOverallStatus()) {
@@ -330,6 +330,24 @@ public class MigrationReportGeneratorService {
 
     private long countByStatus(TraceabilityMatrix matrix, TraceabilityStatus status) {
         return matrix.getEntries().stream().filter(e -> e.getStatus() == status).count();
+    }
+
+    private static final List<String> STRIP_PREFIXES = List.of("PKG_", "TRG_", "SEQ_", "SP_", "FN_", "VW_");
+
+    private static String domainName(String oracleName) {
+        if (oracleName == null || oracleName.isBlank()) return "Unknown";
+        String upper = oracleName.toUpperCase();
+        for (String prefix : STRIP_PREFIXES) {
+            if (upper.startsWith(prefix)) { oracleName = oracleName.substring(prefix.length()); break; }
+        }
+        StringBuilder sb = new StringBuilder();
+        boolean cap = true;
+        for (char c : oracleName.toCharArray()) {
+            if (c == '_') { cap = true; }
+            else if (cap) { sb.append(Character.toUpperCase(c)); cap = false; }
+            else { sb.append(Character.toLowerCase(c)); }
+        }
+        return sb.toString();
     }
 
     private String esc(String s) {

@@ -49,6 +49,12 @@ public class PlSqlTranslationEngine {
     public TranslationResult translate(OracleObject object, String targetPackage) {
         MDC.put("objectName", object.getName());
         try {
+            // Sequences are handled via @GeneratedValue on entities — no service needed
+            if (object.getType() == com.plsql2java.model.OracleObjectType.SEQUENCE
+                    || object.getType() == com.plsql2java.model.OracleObjectType.TRIGGER) {
+                return buildSkippedResult(object, object.getType() + " handled by entity annotations");
+            }
+
             TranslationContext context = new TranslationContext(
                     object.getName(), object.getType(), object.getSchema());
 
@@ -57,8 +63,10 @@ public class PlSqlTranslationEngine {
 
             for (AstNode node : nodes) {
                 TranslationOutcome outcome = applyRule(node, context);
-                context.addConstructResult(new ConstructTranslationResult(
-                        node.getConstructType(), node.getLineNumber(), outcome));
+                ConstructTranslationResult ctr = new ConstructTranslationResult(
+                        node.getConstructType(), node.getLineNumber(), outcome);
+                ctr.setAstNode(node);
+                context.addConstructResult(ctr);
             }
 
             JavaIR javaIR = assembler.assemble(object, context, targetPackage);
@@ -103,6 +111,12 @@ public class PlSqlTranslationEngine {
         return results;
     }
 
+    private TranslationResult buildSkippedResult(OracleObject object, String reason) {
+        TranslationOutcome outcome = TranslationOutcome.translated("// " + reason);
+        ConstructTranslationResult ctr = new ConstructTranslationResult(ConstructType.UNKNOWN, 0, outcome);
+        return new TranslationResult(object, null, List.of(ctr), List.of());
+    }
+
     private String buildSource(OracleObject object) {
         if (object.getSourceBody() != null && !object.getSourceBody().isBlank()) {
             return object.getSourceSpec() + "\n" + object.getSourceBody();
@@ -124,20 +138,22 @@ public class PlSqlTranslationEngine {
 
         PlSqlParser.CompilationUnitContext tree = parser.compilationUnit();
 
-        if (errorListener.hasErrors()) {
-            log.warn("Parse errors in object {}: {} error(s)", objectName, errorListener.getErrors().size());
-            List<AstNode> errorNodes = new ArrayList<>();
-            for (PlSqlErrorListener.ParseError error : errorListener.getErrors()) {
-                AstNode errorNode = new AstNode(ConstructType.UNKNOWN,
-                        "Parse error: " + error.message(), error.line());
-                errorNodes.add(errorNode);
-            }
-            return errorNodes;
-        }
-
         AstBuilder builder = new AstBuilder();
         ParseTreeWalker.DEFAULT.walk(builder, tree);
-        return builder.getNodes();
+        List<AstNode> nodes = new ArrayList<>(builder.getNodes());
+
+        if (errorListener.hasErrors()) {
+            log.warn("Parse errors in object {}: {} error(s)", objectName, errorListener.getErrors().size());
+            // Only add UNKNOWN error nodes if the walk produced nothing
+            if (nodes.isEmpty()) {
+                for (PlSqlErrorListener.ParseError error : errorListener.getErrors()) {
+                    nodes.add(new AstNode(ConstructType.UNKNOWN,
+                            "Parse error: " + error.message(), error.line()));
+                }
+            }
+        }
+
+        return nodes;
     }
 
     private TranslationOutcome applyRule(AstNode node, TranslationContext context) {

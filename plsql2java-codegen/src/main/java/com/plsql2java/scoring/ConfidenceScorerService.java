@@ -40,10 +40,11 @@ public class ConfidenceScorerService {
         boolean hasCompilationErrors = result.getSourceObject().isHasCompilationErrors();
 
         if (result.getJavaIR() == null) {
+            // Skipped objects (SEQUENCE, TRIGGER) are handled via entity annotations — score 100
             return new ObjectConfidenceScore(
                     result.getSourceObject().getName(),
                     result.getSourceObject().getType(),
-                    0, true, List.of(), hasCompilationErrors);
+                    100, false, List.of(), hasCompilationErrors);
         }
 
         List<MethodConfidenceScore> methodScores = result.getJavaIR().getMethods().stream()

@@ -18,5 +18,11 @@ public enum ConstructType {
     RAISE,
     GOTO,
     REF_CURSOR,
+    PROCEDURE_DEF,
+    FUNCTION_DEF,
+    SELECT_INTO,
+    INSERT_STMT,
+    UPDATE_STMT,
+    DELETE_STMT,
     UNKNOWN
 }

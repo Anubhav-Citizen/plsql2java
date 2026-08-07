@@ -17,11 +17,23 @@ public interface PlSqlParserVisitor<T> extends ParseTreeVisitor<T> {
 	 */
 	T visitCompilationUnit(PlSqlParser.CompilationUnitContext ctx);
 	/**
+	 * Visit a parse tree produced by {@link PlSqlParser#createOrReplace}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitCreateOrReplace(PlSqlParser.CreateOrReplaceContext ctx);
+	/**
 	 * Visit a parse tree produced by {@link PlSqlParser#packageSpec}.
 	 * @param ctx the parse tree
 	 * @return the visitor result
 	 */
 	T visitPackageSpec(PlSqlParser.PackageSpecContext ctx);
+	/**
+	 * Visit a parse tree produced by {@link PlSqlParser#typeDecl}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitTypeDecl(PlSqlParser.TypeDeclContext ctx);
 	/**
 	 * Visit a parse tree produced by {@link PlSqlParser#packageBody}.
 	 * @param ctx the parse tree
@@ -40,6 +52,24 @@ public interface PlSqlParserVisitor<T> extends ParseTreeVisitor<T> {
 	 * @return the visitor result
 	 */
 	T visitFunctionDecl(PlSqlParser.FunctionDeclContext ctx);
+	/**
+	 * Visit a parse tree produced by {@link PlSqlParser#triggerDecl}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitTriggerDecl(PlSqlParser.TriggerDeclContext ctx);
+	/**
+	 * Visit a parse tree produced by {@link PlSqlParser#triggerEvent}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitTriggerEvent(PlSqlParser.TriggerEventContext ctx);
+	/**
+	 * Visit a parse tree produced by {@link PlSqlParser#anonymousBlock}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitAnonymousBlock(PlSqlParser.AnonymousBlockContext ctx);
 	/**
 	 * Visit a parse tree produced by {@link PlSqlParser#paramList}.
 	 * @param ctx the parse tree
@@ -205,6 +235,30 @@ public interface PlSqlParserVisitor<T> extends ParseTreeVisitor<T> {
 	 */
 	T visitDmlStatement(PlSqlParser.DmlStatementContext ctx);
 	/**
+	 * Visit a parse tree produced by {@link PlSqlParser#selectIntoStatement}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitSelectIntoStatement(PlSqlParser.SelectIntoStatementContext ctx);
+	/**
+	 * Visit a parse tree produced by {@link PlSqlParser#insertStatement}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitInsertStatement(PlSqlParser.InsertStatementContext ctx);
+	/**
+	 * Visit a parse tree produced by {@link PlSqlParser#updateStatement}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitUpdateStatement(PlSqlParser.UpdateStatementContext ctx);
+	/**
+	 * Visit a parse tree produced by {@link PlSqlParser#deleteStatement}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitDeleteStatement(PlSqlParser.DeleteStatementContext ctx);
+	/**
 	 * Visit a parse tree produced by {@link PlSqlParser#insertStmt}.
 	 * @param ctx the parse tree
 	 * @return the visitor result
@@ -271,6 +325,12 @@ public interface PlSqlParserVisitor<T> extends ParseTreeVisitor<T> {
 	 */
 	T visitSelectStmt(PlSqlParser.SelectStmtContext ctx);
 	/**
+	 * Visit a parse tree produced by {@link PlSqlParser#selectExprList}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitSelectExprList(PlSqlParser.SelectExprListContext ctx);
+	/**
 	 * Visit a parse tree produced by {@link PlSqlParser#condition}.
 	 * @param ctx the parse tree
 	 * @return the visitor result
@@ -294,4 +354,10 @@ public interface PlSqlParserVisitor<T> extends ParseTreeVisitor<T> {
 	 * @return the visitor result
 	 */
 	T visitIdList(PlSqlParser.IdListContext ctx);
+	/**
+	 * Visit a parse tree produced by {@link PlSqlParser#typedIdList}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitTypedIdList(PlSqlParser.TypedIdListContext ctx);
 }

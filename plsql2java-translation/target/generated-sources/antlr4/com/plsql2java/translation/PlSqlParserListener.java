@@ -18,6 +18,16 @@ public interface PlSqlParserListener extends ParseTreeListener {
 	 */
 	void exitCompilationUnit(PlSqlParser.CompilationUnitContext ctx);
 	/**
+	 * Enter a parse tree produced by {@link PlSqlParser#createOrReplace}.
+	 * @param ctx the parse tree
+	 */
+	void enterCreateOrReplace(PlSqlParser.CreateOrReplaceContext ctx);
+	/**
+	 * Exit a parse tree produced by {@link PlSqlParser#createOrReplace}.
+	 * @param ctx the parse tree
+	 */
+	void exitCreateOrReplace(PlSqlParser.CreateOrReplaceContext ctx);
+	/**
 	 * Enter a parse tree produced by {@link PlSqlParser#packageSpec}.
 	 * @param ctx the parse tree
 	 */
@@ -27,6 +37,16 @@ public interface PlSqlParserListener extends ParseTreeListener {
 	 * @param ctx the parse tree
 	 */
 	void exitPackageSpec(PlSqlParser.PackageSpecContext ctx);
+	/**
+	 * Enter a parse tree produced by {@link PlSqlParser#typeDecl}.
+	 * @param ctx the parse tree
+	 */
+	void enterTypeDecl(PlSqlParser.TypeDeclContext ctx);
+	/**
+	 * Exit a parse tree produced by {@link PlSqlParser#typeDecl}.
+	 * @param ctx the parse tree
+	 */
+	void exitTypeDecl(PlSqlParser.TypeDeclContext ctx);
 	/**
 	 * Enter a parse tree produced by {@link PlSqlParser#packageBody}.
 	 * @param ctx the parse tree
@@ -57,6 +77,36 @@ public interface PlSqlParserListener extends ParseTreeListener {
 	 * @param ctx the parse tree
 	 */
 	void exitFunctionDecl(PlSqlParser.FunctionDeclContext ctx);
+	/**
+	 * Enter a parse tree produced by {@link PlSqlParser#triggerDecl}.
+	 * @param ctx the parse tree
+	 */
+	void enterTriggerDecl(PlSqlParser.TriggerDeclContext ctx);
+	/**
+	 * Exit a parse tree produced by {@link PlSqlParser#triggerDecl}.
+	 * @param ctx the parse tree
+	 */
+	void exitTriggerDecl(PlSqlParser.TriggerDeclContext ctx);
+	/**
+	 * Enter a parse tree produced by {@link PlSqlParser#triggerEvent}.
+	 * @param ctx the parse tree
+	 */
+	void enterTriggerEvent(PlSqlParser.TriggerEventContext ctx);
+	/**
+	 * Exit a parse tree produced by {@link PlSqlParser#triggerEvent}.
+	 * @param ctx the parse tree
+	 */
+	void exitTriggerEvent(PlSqlParser.TriggerEventContext ctx);
+	/**
+	 * Enter a parse tree produced by {@link PlSqlParser#anonymousBlock}.
+	 * @param ctx the parse tree
+	 */
+	void enterAnonymousBlock(PlSqlParser.AnonymousBlockContext ctx);
+	/**
+	 * Exit a parse tree produced by {@link PlSqlParser#anonymousBlock}.
+	 * @param ctx the parse tree
+	 */
+	void exitAnonymousBlock(PlSqlParser.AnonymousBlockContext ctx);
 	/**
 	 * Enter a parse tree produced by {@link PlSqlParser#paramList}.
 	 * @param ctx the parse tree
@@ -332,6 +382,46 @@ public interface PlSqlParserListener extends ParseTreeListener {
 	 */
 	void exitDmlStatement(PlSqlParser.DmlStatementContext ctx);
 	/**
+	 * Enter a parse tree produced by {@link PlSqlParser#selectIntoStatement}.
+	 * @param ctx the parse tree
+	 */
+	void enterSelectIntoStatement(PlSqlParser.SelectIntoStatementContext ctx);
+	/**
+	 * Exit a parse tree produced by {@link PlSqlParser#selectIntoStatement}.
+	 * @param ctx the parse tree
+	 */
+	void exitSelectIntoStatement(PlSqlParser.SelectIntoStatementContext ctx);
+	/**
+	 * Enter a parse tree produced by {@link PlSqlParser#insertStatement}.
+	 * @param ctx the parse tree
+	 */
+	void enterInsertStatement(PlSqlParser.InsertStatementContext ctx);
+	/**
+	 * Exit a parse tree produced by {@link PlSqlParser#insertStatement}.
+	 * @param ctx the parse tree
+	 */
+	void exitInsertStatement(PlSqlParser.InsertStatementContext ctx);
+	/**
+	 * Enter a parse tree produced by {@link PlSqlParser#updateStatement}.
+	 * @param ctx the parse tree
+	 */
+	void enterUpdateStatement(PlSqlParser.UpdateStatementContext ctx);
+	/**
+	 * Exit a parse tree produced by {@link PlSqlParser#updateStatement}.
+	 * @param ctx the parse tree
+	 */
+	void exitUpdateStatement(PlSqlParser.UpdateStatementContext ctx);
+	/**
+	 * Enter a parse tree produced by {@link PlSqlParser#deleteStatement}.
+	 * @param ctx the parse tree
+	 */
+	void enterDeleteStatement(PlSqlParser.DeleteStatementContext ctx);
+	/**
+	 * Exit a parse tree produced by {@link PlSqlParser#deleteStatement}.
+	 * @param ctx the parse tree
+	 */
+	void exitDeleteStatement(PlSqlParser.DeleteStatementContext ctx);
+	/**
 	 * Enter a parse tree produced by {@link PlSqlParser#insertStmt}.
 	 * @param ctx the parse tree
 	 */
@@ -442,6 +532,16 @@ public interface PlSqlParserListener extends ParseTreeListener {
 	 */
 	void exitSelectStmt(PlSqlParser.SelectStmtContext ctx);
 	/**
+	 * Enter a parse tree produced by {@link PlSqlParser#selectExprList}.
+	 * @param ctx the parse tree
+	 */
+	void enterSelectExprList(PlSqlParser.SelectExprListContext ctx);
+	/**
+	 * Exit a parse tree produced by {@link PlSqlParser#selectExprList}.
+	 * @param ctx the parse tree
+	 */
+	void exitSelectExprList(PlSqlParser.SelectExprListContext ctx);
+	/**
 	 * Enter a parse tree produced by {@link PlSqlParser#condition}.
 	 * @param ctx the parse tree
 	 */
@@ -481,4 +581,14 @@ public interface PlSqlParserListener extends ParseTreeListener {
 	 * @param ctx the parse tree
 	 */
 	void exitIdList(PlSqlParser.IdListContext ctx);
+	/**
+	 * Enter a parse tree produced by {@link PlSqlParser#typedIdList}.
+	 * @param ctx the parse tree
+	 */
+	void enterTypedIdList(PlSqlParser.TypedIdListContext ctx);
+	/**
+	 * Exit a parse tree produced by {@link PlSqlParser#typedIdList}.
+	 * @param ctx the parse tree
+	 */
+	void exitTypedIdList(PlSqlParser.TypedIdListContext ctx);
 }
