@@ -1,0 +1,98 @@
+name: Sync Local Stories → GitHub Issues
+
+on:
+  push:
+    branches: [main, master]
+    paths:
+      - 'aidlc-docs/inception/user-stories/stories.md'
+  workflow_dispatch:
+
+jobs:
+  sync-to-github:
+    runs-on: ubuntu-latest
+    permissions:
+      issues: write
+      contents: read
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Install dependencies
+        run: pip install requests
+
+      - name: Sync stories to GitHub Issues
+        env:
+          GH_TOKEN: ${{ secrets.GH_PAT }}
+          REPO: ${{ github.repository }}
+          PROJECT_NUMBER: "1"
+          PROJECT_OWNER: "Anubhav-Citizen"
+        run: |
+          python3 - <<'PYEOF'
+          import sys
+          sys.path.insert(0, ".github/scripts")
+          import story_sync as s
+          import time
+
+          STORIES_FILE = "aidlc-docs/inception/user-stories/stories.md"
+
+          # Parse local stories
+          stories = s.parse_stories(STORIES_FILE)
+          print(f"Parsed {len(stories)} stories")
+
+          # Get project ID
+          project_id = s.get_project_id()
+          print(f"Project ID: {project_id}")
+
+          # Get existing issues (to avoid duplicates)
+          existing = s.get_existing_issues()
+          print(f"Existing issues: {len(existing)}")
+
+          # Ensure epic labels exist
+          epic_names = list(dict.fromkeys(st["epic"] for st in stories))
+          for i, epic in enumerate(epic_names):
+              label = epic[:50]
+              s.ensure_label(label, s.EPIC_COLORS[i % len(s.EPIC_COLORS)], epic)
+
+          # Ensure story-sync label exists
+          s.ensure_label("story-sync", "bfd4f2", "Auto-synced from stories.md")
+
+          created = updated = skipped = 0
+
+          for story in stories:
+              label     = story["epic"][:50]
+              issue_body = (
+                  f"**Epic**: {story['epic']}\n"
+                  f"**Story**: {story['story_number']}\n"
+                  f"**Source**: `aidlc-docs/inception/user-stories/stories.md`\n\n"
+                  f"---\n\n{story['body']}"
+              )
+
+              if story["title"] in existing:
+                  # Update body if changed
+                  ex = existing[story["title"]]
+                  if ex.get("body", "") != issue_body:
+                      s.update_issue_body(ex["number"], issue_body)
+                      print(f"  Updated #{ex['number']}: {story['title']}")
+                      updated += 1
+                  else:
+                      skipped += 1
+              else:
+                  # Create new issue
+                  issue = s.create_issue(
+                      story["title"], issue_body, [label, "story-sync"])
+                  if "node_id" not in issue:
+                      print(f"  ERROR creating: {story['title']} — {issue}")
+                      continue
+                  s.add_issue_to_project(project_id, issue["node_id"])
+                  print(f"  Created #{issue['number']}: {story['title']}")
+                  created += 1
+                  time.sleep(0.4)
+
+          print(f"\nDone — created: {created}, updated: {updated}, skipped: {skipped}")
+          PYEOF

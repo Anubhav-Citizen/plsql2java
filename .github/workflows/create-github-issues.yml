@@ -1,7 +1,13 @@
-name: Create GitHub Issues from User Stories
+# DEPRECATED: superseded by sync-stories-to-github.yml
+# Kept for reference only — run sync-stories-to-github.yml instead.
+name: Create GitHub Issues from User Stories (deprecated)
 
 on:
   workflow_dispatch:
+    inputs:
+      confirm:
+        description: 'Type DEPRECATED to confirm you want to run the old one-shot workflow'
+        required: true
 
 jobs:
   create-issues:
