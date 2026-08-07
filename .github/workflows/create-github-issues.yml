@@ -1,0 +1,135 @@
+name: Create GitHub Issues from User Stories
+
+on:
+  workflow_dispatch:
+
+jobs:
+  create-issues:
+    runs-on: ubuntu-latest
+    permissions:
+      issues: write
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Install dependencies
+        run: pip install requests
+
+      - name: Parse stories and create issues
+        env:
+          GH_TOKEN: ${{ secrets.GH_PAT }}
+          REPO: ${{ github.repository }}
+          PROJECT_NUMBER: "1"
+          PROJECT_OWNER: "Anubhav-Citizen"
+        run: |
+          python3 - <<'PYEOF'
+          import os, re, json, requests, time
+
+          TOKEN       = os.environ["GH_TOKEN"]
+          REPO        = os.environ["REPO"]
+          PROJ_NUM    = int(os.environ["PROJECT_NUMBER"])
+          PROJ_OWNER  = os.environ["PROJECT_OWNER"]
+          HEADERS     = {"Authorization": f"Bearer {TOKEN}",
+                         "Accept": "application/vnd.github+json",
+                         "X-GitHub-Api-Version": "2022-11-28"}
+          GQL_HEADERS = {"Authorization": f"Bearer {TOKEN}",
+                         "Content-Type": "application/json"}
+          API         = "https://api.github.com"
+          GQL         = "https://api.github.com/graphql"
+
+          # ── 1. Read stories file ──────────────────────────────────────────
+          with open("aidlc-docs/inception/user-stories/stories.md") as f:
+              content = f.read()
+
+          # ── 2. Parse epics and stories ────────────────────────────────────
+          epic_pattern   = re.compile(r'^## (Epic \d+: .+)$', re.MULTILINE)
+          story_pattern  = re.compile(
+              r'^### (Story \d+\.\d+ — .+?)\n(.*?)(?=^### Story|\Z)',
+              re.MULTILINE | re.DOTALL)
+
+          epic_positions = [(m.start(), m.group(1)) for m in epic_pattern.finditer(content)]
+
+          def epic_for_pos(pos):
+              name = "General"
+              for ep_pos, ep_name in epic_positions:
+                  if ep_pos <= pos:
+                      name = ep_name
+              return name
+
+          stories = []
+          for m in story_pattern.finditer(content):
+              stories.append({
+                  "title": m.group(1).strip(),
+                  "body":  m.group(2).strip(),
+                  "epic":  epic_for_pos(m.start()),
+              })
+
+          print(f"Parsed {len(stories)} stories across {len(epic_positions)} epics")
+
+          # ── 3. Ensure epic labels exist ───────────────────────────────────
+          COLORS = ["0075ca","e4e669","d93f0b","0e8a16","1d76db","5319e7","f9d0c4","c2e0c6"]
+          existing_labels = {l["name"] for l in
+              requests.get(f"{API}/repos/{REPO}/labels?per_page=100", headers=HEADERS).json()
+              if isinstance(l, dict)}
+
+          epic_names = list(dict.fromkeys(s["epic"] for s in stories))
+          for i, epic in enumerate(epic_names):
+              label = epic[:50]
+              if label not in existing_labels:
+                  requests.post(f"{API}/repos/{REPO}/labels", headers=HEADERS,
+                      json={"name": label, "color": COLORS[i % len(COLORS)],
+                            "description": epic})
+                  print(f"  Created label: {label}")
+
+          # ── 4. Get project node ID via GraphQL ────────────────────────────
+          gql_proj = """
+          query($login: String!, $number: Int!) {
+            user(login: $login) {
+              projectV2(number: $number) { id }
+            }
+          }"""
+          resp = requests.post(GQL, headers=GQL_HEADERS,
+              json={"query": gql_proj,
+                    "variables": {"login": PROJ_OWNER, "number": PROJ_NUM}})
+          project_id = resp.json()["data"]["user"]["projectV2"]["id"]
+          print(f"Project node ID: {project_id}")
+
+          # ── 5. Create issues and add to project ───────────────────────────
+          gql_add = """
+          mutation($projectId: ID!, $contentId: ID!) {
+            addProjectV2ItemById(input: {projectId: $projectId, contentId: $contentId}) {
+              item { id }
+            }
+          }"""
+
+          for story in stories:
+              label = story["epic"][:50]
+              body  = f"**Epic**: {story['epic']}\n\n{story['body']}"
+
+              # Create issue
+              r = requests.post(f"{API}/repos/{REPO}/issues", headers=HEADERS,
+                  json={"title": story["title"], "body": body, "labels": [label]})
+              issue = r.json()
+              if "node_id" not in issue:
+                  print(f"  SKIP (already exists or error): {story['title']}")
+                  continue
+
+              issue_node_id = issue["node_id"]
+              issue_number  = issue["number"]
+              print(f"  Created issue #{issue_number}: {story['title']}")
+
+              # Add to project
+              requests.post(GQL, headers=GQL_HEADERS,
+                  json={"query": gql_add,
+                        "variables": {"projectId": project_id,
+                                      "contentId": issue_node_id}})
+              time.sleep(0.5)   # stay within rate limits
+
+          print("Done.")
+          PYEOF
