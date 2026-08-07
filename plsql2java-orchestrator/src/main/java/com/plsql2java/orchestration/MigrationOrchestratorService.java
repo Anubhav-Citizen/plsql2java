@@ -65,11 +65,13 @@ public class MigrationOrchestratorService {
         try {
             validateOutputDir(config.getOutputDir());
 
-            emit(config.getMigrationId(), PipelineStage.DISCOVERY, "Starting discovery");
+            emit(config.getMigrationId(), PipelineStage.DISCOVERY, 5, "Starting discovery");
             DiscoveryResult discovery = runDiscovery(config);
+            emit(config.getMigrationId(), PipelineStage.DISCOVERY, 40, "Discovery complete: " + discovery.getTotalObjectCount() + " objects");
 
-            emit(config.getMigrationId(), PipelineStage.DEPENDENCY_ANALYSIS, "Analysing dependencies");
+            emit(config.getMigrationId(), PipelineStage.DEPENDENCY_ANALYSIS, 50, "Analysing dependencies");
             DependencyGraph graph = dependencyAnalyzerService.analyze(discovery);
+            emit(config.getMigrationId(), PipelineStage.DEPENDENCY_ANALYSIS, 90, "Dependency analysis complete");
 
             Path analysisDir = config.getOutputDir().resolve("analysis");
             discoveryService.persist(discovery, analysisDir);
@@ -103,7 +105,8 @@ public class MigrationOrchestratorService {
             List<OracleObject> orderedObjects = resolveProcessingOrder(discovery, graph);
 
             // Translation — fail-partial
-            emit(config.getMigrationId(), PipelineStage.TRANSLATION, "Translating " + orderedObjects.size() + " objects");
+            // Translation occupies 20%-65% of overall progress
+            emit(config.getMigrationId(), PipelineStage.TRANSLATION, 20, "Translating " + orderedObjects.size() + " objects");
             List<TranslationResult> translationResults = new ArrayList<>();
             int total = orderedObjects.size();
             for (int i = 0; i < total; i++) {
@@ -111,8 +114,9 @@ public class MigrationOrchestratorService {
                 MDC.put("objectName", obj.getName());
                 try {
                     translationResults.add(translationEngine.translate(obj, config.getTargetPackage() != null ? config.getTargetPackage() : "com.example"));
+                    int translationPct = total > 0 ? 20 + ((i + 1) * 45 / total) : 65;
                     eventBus.emit(new MigrationProgress(config.getMigrationId(), PipelineStage.TRANSLATION,
-                            obj.getName(), i + 1, total, "Translated: " + obj.getName()));
+                            obj.getName(), i + 1, total, translationPct, "Translated: " + obj.getName()));
                 } catch (Exception e) {
                     log.warn("Skipping {} — translation error: {}", obj.getName(), e.getMessage());
                     skippedObjects.add(obj.getName());
@@ -122,7 +126,7 @@ public class MigrationOrchestratorService {
             }
 
             // Code generation
-            emit(config.getMigrationId(), PipelineStage.CODE_GENERATION, "Generating Java project");
+            emit(config.getMigrationId(), PipelineStage.CODE_GENERATION, 68, "Generating Java project");
             GenerationContext ctx = buildGenerationContext(config);
             GeneratedProject generatedProject = codeGeneratorService.generateProject(translationResults, ctx);
             skippedObjects.addAll(generatedProject.getSkippedObjects());
@@ -130,19 +134,20 @@ public class MigrationOrchestratorService {
             // Write project files
             Path projectDir = config.getOutputDir().resolve("generated");
             codeGeneratorService.writeProject(generatedProject, projectDir);
+            emit(config.getMigrationId(), PipelineStage.CODE_GENERATION, 78, "Java project written");
 
             // Confidence scoring
-            emit(config.getMigrationId(), PipelineStage.CONFIDENCE_SCORING, "Scoring confidence");
+            emit(config.getMigrationId(), PipelineStage.CONFIDENCE_SCORING, 83, "Scoring confidence");
             ConfidenceReport confidenceReport = confidenceScorerService.scoreAll(translationResults, config.getConfidenceThreshold());
 
             // Report generation
-            emit(config.getMigrationId(), PipelineStage.REPORT_GENERATION, "Generating migration report");
+            emit(config.getMigrationId(), PipelineStage.REPORT_GENERATION, 90, "Generating migration report");
             ReportInput reportInput = new ReportInput(discovery, graph, translationResults,
                     generatedProject, confidenceReport, config);
             MigrationReport migrationReport = reportGeneratorService.generateReport(reportInput);
             reportGeneratorService.writeReport(migrationReport, config.getOutputDir().resolve("reports"));
 
-            emit(config.getMigrationId(), PipelineStage.COMPLETE, "Migration complete");
+            emit(config.getMigrationId(), PipelineStage.COMPLETE, 99, "Migration complete");
 
             MigrationResult result = new MigrationResult(config.getMigrationId(), analysis,
                     translationResults, generatedProject, confidenceReport, migrationReport, skippedObjects);
@@ -175,18 +180,17 @@ public class MigrationOrchestratorService {
         try {
             validateOutputDir(config.getOutputDir());
 
-            emit(config.getMigrationId(), PipelineStage.REPORT_GENERATION, "Loading persisted analysis");
+            emit(config.getMigrationId(), PipelineStage.REPORT_GENERATION, 10, "Loading persisted analysis");
             DiscoveryResult discovery = discoveryService.load(config.getOutputDir().resolve("analysis"));
             DependencyGraph graph = dependencyAnalyzerService.analyze(discovery);
 
-            // Rebuild minimal report input from persisted data
             ReportInput reportInput = new ReportInput(discovery, graph, List.of(), null, null, config);
 
-            emit(config.getMigrationId(), PipelineStage.REPORT_GENERATION, "Generating report");
+            emit(config.getMigrationId(), PipelineStage.REPORT_GENERATION, 70, "Generating report");
             MigrationReport migrationReport = reportGeneratorService.generateReport(reportInput);
             reportGeneratorService.writeReport(migrationReport, config.getOutputDir().resolve("reports"));
 
-            emit(config.getMigrationId(), PipelineStage.COMPLETE, "Report complete");
+            emit(config.getMigrationId(), PipelineStage.COMPLETE, 99, "Report complete");
             job.complete();
             log.info("Report generated for migration {}", config.getMigrationId());
             return migrationReport;
@@ -203,15 +207,23 @@ public class MigrationOrchestratorService {
     private DiscoveryResult runDiscovery(MigrationConfig config) {
         if (config.isJdbcMode()) {
             return discoveryService.discoverFromJdbc(config.getJdbcConfig(), config.getMigrationId(),
-                    event -> eventBus.emit(new MigrationProgress(config.getMigrationId(),
-                            PipelineStage.DISCOVERY, event.getObjectName(),
-                            event.getProcessedCount(), event.getTotalCount(), event.getMessage())));
+                    event -> {
+                        int pct = event.getTotalCount() > 0
+                                ? 5 + (event.getProcessedCount() * 35 / event.getTotalCount()) : 5;
+                        eventBus.emit(new MigrationProgress(config.getMigrationId(),
+                                PipelineStage.DISCOVERY, event.getObjectName(),
+                                event.getProcessedCount(), event.getTotalCount(), pct, event.getMessage()));
+                    });
         }
         return discoveryService.discoverFromFiles(config.getDdlFiles(), config.getMigrationId(),
                 config.getSchemaName(),
-                event -> eventBus.emit(new MigrationProgress(config.getMigrationId(),
-                        PipelineStage.DISCOVERY, event.getObjectName(),
-                        event.getProcessedCount(), event.getTotalCount(), event.getMessage())));
+                event -> {
+                    int pct = event.getTotalCount() > 0
+                            ? 5 + (event.getProcessedCount() * 35 / event.getTotalCount()) : 5;
+                    eventBus.emit(new MigrationProgress(config.getMigrationId(),
+                            PipelineStage.DISCOVERY, event.getObjectName(),
+                            event.getProcessedCount(), event.getTotalCount(), pct, event.getMessage()));
+                });
     }
 
     private List<OracleObject> resolveProcessingOrder(DiscoveryResult discovery, DependencyGraph graph) {
@@ -243,9 +255,9 @@ public class MigrationOrchestratorService {
         );
     }
 
-    private void emit(String migrationId, PipelineStage stage, String message) {
-        eventBus.emit(MigrationProgress.stageStart(migrationId, stage));
-        log.info("[{}] {}", stage, message);
+    private void emit(String migrationId, PipelineStage stage, int pct, String message) {
+        eventBus.emit(new MigrationProgress(migrationId, stage, null, 0, 0, pct, message));
+        log.info("[{}] {}%: {}", stage, pct, message);
     }
 
     private void validateOutputDir(Path outputDir) throws IOException {

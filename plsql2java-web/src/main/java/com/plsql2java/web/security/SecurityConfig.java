@@ -21,7 +21,7 @@ public class SecurityConfig {
         http
             // SECURITY-08: deny-by-default
             .authorizeHttpRequests(auth -> auth
-                .requestMatchers("/", "/login", "/css/**", "/js/**",
+                .requestMatchers("/login", "/css/**", "/js/**", "/favicon.ico",
                                  "/v3/api-docs/**", "/swagger-ui/**").permitAll()
                 .anyRequest().authenticated()
             )
@@ -37,10 +37,14 @@ public class SecurityConfig {
                 .deleteCookies("JSESSIONID")
                 .permitAll()
             )
+            // CSRF: disabled for /api/** (REST endpoints); enabled for form-based views
+            .csrf(csrf -> csrf
+                .ignoringRequestMatchers("/api/**")
+            )
             // SECURITY-04: HTTP security headers
             .headers(headers -> headers
                 .contentSecurityPolicy(csp -> csp
-                    .policyDirectives("default-src 'self'; script-src 'self'; style-src 'self'; img-src 'self' data:"))
+                    .policyDirectives("default-src 'self'; script-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net; style-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net; img-src 'self' data:; connect-src 'self' https://cdn.jsdelivr.net"))
                 .httpStrictTransportSecurity(hsts -> hsts
                     .maxAgeInSeconds(31536000)
                     .includeSubDomains(true))

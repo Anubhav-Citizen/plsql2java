@@ -24,11 +24,11 @@ class DdlFileParserTest {
         List<OracleObject> objects = parser.parse(file, errors);
 
         assertThat(errors).isEmpty();
-        assertThat(objects).hasSize(1); // spec + body merged by normalizer; parser returns 2 raw
-        // Parser returns raw objects before normalization
+        assertThat(objects).hasSize(2); // parser returns both PACKAGE spec and PACKAGE_BODY raw
         long packages = objects.stream().filter(o -> o.getType() == OracleObjectType.PACKAGE).count();
         long bodies = objects.stream().filter(o -> o.getType() == OracleObjectType.PACKAGE_BODY).count();
-        assertThat(packages + bodies).isGreaterThanOrEqualTo(1);
+        assertThat(packages).isEqualTo(1);
+        assertThat(bodies).isEqualTo(1);
     }
 
     @Test

@@ -1,5 +1,6 @@
 package com.plsql2java.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
@@ -44,9 +45,9 @@ public class DiscoveryResult {
     public Instant getDiscoveredAt() { return discoveredAt; }
     public void setDiscoveredAt(Instant discoveredAt) { this.discoveredAt = discoveredAt; }
 
-    public int getTotalObjectCount() { return objects.size(); }
-    public int getErrorCount() { return errors.size(); }
-    public long getObjectsWithCompilationErrors() {
+    @JsonIgnore public int getTotalObjectCount() { return objects.size(); }
+    @JsonIgnore public int getErrorCount() { return errors.size(); }
+    @JsonIgnore public long getObjectsWithCompilationErrors() {
         return objects.stream().filter(OracleObject::isHasCompilationErrors).count();
     }
 }

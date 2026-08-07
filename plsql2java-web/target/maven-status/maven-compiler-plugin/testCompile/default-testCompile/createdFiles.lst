@@ -1,0 +1,5 @@
+com\plsql2java\web\FileUploadServiceTest.class
+com\plsql2java\web\WebIntegrationTest.class
+com\plsql2java\web\MigrationControllerTest.class
+com\plsql2java\web\MigrationJobRegistryTest.class
+com\plsql2java\web\ZipPackagerTest.class

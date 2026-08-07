@@ -1,0 +1,8 @@
+[
+  {"oracleException":"NO_DATA_FOUND","javaException":"EmptyResultDataAccessException","requiresImport":"org.springframework.dao.EmptyResultDataAccessException"},
+  {"oracleException":"TOO_MANY_ROWS","javaException":"IncorrectResultSizeDataAccessException","requiresImport":"org.springframework.dao.IncorrectResultSizeDataAccessException"},
+  {"oracleException":"DUP_VAL_ON_INDEX","javaException":"DataIntegrityViolationException","requiresImport":"org.springframework.dao.DataIntegrityViolationException"},
+  {"oracleException":"VALUE_ERROR","javaException":"IllegalArgumentException","requiresImport":null},
+  {"oracleException":"ZERO_DIVIDE","javaException":"ArithmeticException","requiresImport":null},
+  {"oracleException":"OTHERS","javaException":"Exception","requiresImport":null}
+]

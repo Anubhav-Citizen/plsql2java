@@ -70,8 +70,7 @@ class PlSqlTranslationEngineTest {
     void translate_simplePackage_returnsResult() {
         OracleObject obj = new OracleObject("ORDER_PROCESSOR", OracleObjectType.PACKAGE,
                 "MYSCHEMA",
-                "CREATE OR REPLACE PACKAGE ORDER_PROCESSOR IS PROCEDURE process_order; END ORDER_PROCESSOR;",
-                null, false);
+                "CREATE OR REPLACE PACKAGE ORDER_PROCESSOR IS PROCEDURE process_order; END ORDER_PROCESSOR;");
         TranslationResult result = engine.translate(obj);
         assertThat(result).isNotNull();
         assertThat(result.getSourceObject().getName()).isEqualTo("ORDER_PROCESSOR");
@@ -80,7 +79,8 @@ class PlSqlTranslationEngineTest {
     @Test
     void translate_objectWithCompilationErrors_returnsResult() {
         OracleObject obj = new OracleObject("BAD_PKG", OracleObjectType.PACKAGE,
-                "MYSCHEMA", "CREATE PACKAGE BAD_PKG IS END;", null, true);
+                "MYSCHEMA", "CREATE PACKAGE BAD_PKG IS END;");
+        obj.setHasCompilationErrors(true);
         TranslationResult result = engine.translate(obj);
         assertThat(result).isNotNull();
         // Should still return a result (not throw)
@@ -89,7 +89,7 @@ class PlSqlTranslationEngineTest {
     @Test
     void translate_parseError_returnsFlaggedResult() {
         OracleObject obj = new OracleObject("BROKEN", OracleObjectType.PROCEDURE,
-                "MYSCHEMA", "THIS IS NOT VALID PLSQL @@@@", null, false);
+                "MYSCHEMA", "THIS IS NOT VALID PLSQL @@@@");
         TranslationResult result = engine.translate(obj);
         assertThat(result).isNotNull();
         // Parse errors produce FLAGGED nodes — overall status should be FLAGGED
@@ -99,9 +99,9 @@ class PlSqlTranslationEngineTest {
     @Test
     void translateAll_emitsProgressEvents() {
         OracleObject obj1 = new OracleObject("PKG1", OracleObjectType.PACKAGE,
-                "SCHEMA", "CREATE PACKAGE PKG1 IS END;", null, false);
+                "SCHEMA", "CREATE PACKAGE PKG1 IS END;");
         OracleObject obj2 = new OracleObject("PKG2", OracleObjectType.PACKAGE,
-                "SCHEMA", "CREATE PACKAGE PKG2 IS END;", null, false);
+                "SCHEMA", "CREATE PACKAGE PKG2 IS END;");
 
         List<ProgressEvent> events = new ArrayList<>();
         ProgressListener listener = events::add;
@@ -119,8 +119,7 @@ class PlSqlTranslationEngineTest {
     void translate_gotoConstruct_flaggedInResult() {
         OracleObject obj = new OracleObject("GOTO_PROC", OracleObjectType.PROCEDURE,
                 "SCHEMA",
-                "CREATE OR REPLACE PROCEDURE GOTO_PROC IS BEGIN GOTO end_proc; <<end_proc>> NULL; END;",
-                null, false);
+                "CREATE OR REPLACE PROCEDURE GOTO_PROC IS BEGIN GOTO end_proc; <<end_proc>> NULL; END;");
         TranslationResult result = engine.translate(obj);
         assertThat(result).isNotNull();
         // GOTO should produce at least one flagged construct

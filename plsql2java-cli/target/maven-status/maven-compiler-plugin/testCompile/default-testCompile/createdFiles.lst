@@ -1,0 +1,6 @@
+com\plsql2java\cli\AnalyzeCommandTest.class
+com\plsql2java\cli\GenerateCommandTest.class
+com\plsql2java\cli\MigrationConfigMapperTest.class
+com\plsql2java\cli\CliIntegrationTest.class
+com\plsql2java\cli\ConfigLoaderTest.class
+com\plsql2java\cli\ReportCommandTest.class

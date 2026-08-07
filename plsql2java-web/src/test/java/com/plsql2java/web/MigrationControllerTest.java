@@ -57,7 +57,7 @@ class MigrationControllerTest {
                 "file", "schema.sql", "text/plain", "SELECT 1;".getBytes());
 
         mockMvc.perform(multipart("/api/migrations/upload").file(file))
-                .andExpect(status().isUnauthorized());
+                .andExpect(status().isForbidden());
     }
 
     @Test

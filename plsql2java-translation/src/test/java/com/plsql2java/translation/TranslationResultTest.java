@@ -18,7 +18,7 @@ class TranslationResultTest {
 
     private OracleObject sampleObject() {
         return new OracleObject("TEST_PKG", OracleObjectType.PACKAGE, "MYSCHEMA",
-                "CREATE PACKAGE TEST_PKG IS END;", null, false);
+                "CREATE PACKAGE TEST_PKG IS END;");
     }
 
     @Test

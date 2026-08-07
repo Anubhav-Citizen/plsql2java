@@ -13,7 +13,7 @@ public class AstBuilder extends PlSqlParserBaseListener {
     private final List<AstNode> nodes = new ArrayList<>();
 
     @Override
-    public void enterVariableDecl(PlSqlParser.VarDeclSimpleContext ctx) {
+    public void enterVarDeclSimple(PlSqlParser.VarDeclSimpleContext ctx) {
         AstNode node = new AstNode(ConstructType.VARIABLE_DECLARATION, ctx.getText(), ctx.start.getLine());
         node.setAttribute("varName", ctx.ID().getText());
         node.setAttribute("dataType", ctx.dataType().getText());

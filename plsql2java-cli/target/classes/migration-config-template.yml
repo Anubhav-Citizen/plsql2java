@@ -1,0 +1,23 @@
+# plsql2java Migration Configuration Template
+# Copy this file and fill in your values.
+# CLI flags override values in this file.
+# JDBC password: set PLSQL2JAVA_JDBC_PASSWORD environment variable (never put passwords here).
+
+oracle:
+  # Option A: JDBC live connection
+  jdbcUrl: jdbc:oracle:thin:@localhost:1521:XE
+  jdbcUser: scott
+  # password: use PLSQL2JAVA_JDBC_PASSWORD env var
+
+  # Option B: Offline DDL files (comment out jdbcUrl/jdbcUser above)
+  # ddlFiles:
+  #   - ./schema/procedures.sql
+  #   - ./schema/packages.sql
+
+output:
+  directory: ./plsql2java-output
+  targetPackage: com.example.migrated
+
+migration:
+  confidenceThreshold: 0.7
+  # objectTypes: []   # empty = all types; or e.g. [PROCEDURE, FUNCTION, PACKAGE]

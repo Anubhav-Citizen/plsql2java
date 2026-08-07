@@ -1,0 +1,10 @@
+C:\project\repo\plsql2java\plsql2java-discovery\src\test\java\com\plsql2java\discovery\jdbc\OracleDataDictionaryReaderTest.java
+C:\project\repo\plsql2java\plsql2java-discovery\src\test\java\com\plsql2java\discovery\OracleDiscoveryServiceFileTest.java
+C:\project\repo\plsql2java\plsql2java-discovery\src\test\java\com\plsql2java\discovery\file\DdlFileParserTest.java
+C:\project\repo\plsql2java\plsql2java-discovery\src\test\java\com\plsql2java\dependency\DependencyAnalyzerServiceTest.java
+C:\project\repo\plsql2java\plsql2java-discovery\src\test\java\com\plsql2java\discovery\OracleDiscoveryServiceJdbcTest.java
+C:\project\repo\plsql2java\plsql2java-discovery\src\test\java\com\plsql2java\dependency\TopologicalSorterTest.java
+C:\project\repo\plsql2java\plsql2java-discovery\src\test\java\com\plsql2java\model\OracleObjectTest.java
+C:\project\repo\plsql2java\plsql2java-discovery\src\test\java\com\plsql2java\model\DependencyGraphTest.java
+C:\project\repo\plsql2java\plsql2java-discovery\src\test\java\com\plsql2java\discovery\ResultPersistenceServiceTest.java
+C:\project\repo\plsql2java\plsql2java-discovery\src\test\java\com\plsql2java\dependency\CycleDetectorTest.java
