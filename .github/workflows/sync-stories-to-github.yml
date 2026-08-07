@@ -2,7 +2,7 @@ name: Sync Local Stories → GitHub Issues
 
 on:
   push:
-    branches: [main, master]
+    branches: [main, master, feature/anubhav]
     paths:
       - 'aidlc-docs/inception/user-stories/stories.md'
   workflow_dispatch:
