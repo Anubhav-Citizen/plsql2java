@@ -13,6 +13,60 @@ public class AstBuilder extends PlSqlParserBaseListener {
     private final List<AstNode> nodes = new ArrayList<>();
 
     @Override
+    public void enterProcedureDecl(PlSqlParser.ProcedureDeclContext ctx) {
+        AstNode node = new AstNode(ConstructType.PROCEDURE_DEF, ctx.getText(), ctx.start.getLine());
+        node.setAttribute("name", ctx.ID().getText());
+        if (ctx.paramList() != null) {
+            node.setAttribute("params", ctx.paramList().getText());
+            node.setAttribute("paramCtx", ctx.paramList());
+        }
+        node.setAttribute("blockCtx", ctx.block());
+        nodes.add(node);
+    }
+
+    @Override
+    public void enterFunctionDecl(PlSqlParser.FunctionDeclContext ctx) {
+        AstNode node = new AstNode(ConstructType.FUNCTION_DEF, ctx.getText(), ctx.start.getLine());
+        node.setAttribute("name", ctx.ID().getText());
+        node.setAttribute("returnType", ctx.dataType().getText());
+        if (ctx.paramList() != null) {
+            node.setAttribute("params", ctx.paramList().getText());
+            node.setAttribute("paramCtx", ctx.paramList());
+        }
+        node.setAttribute("blockCtx", ctx.block());
+        nodes.add(node);
+    }
+
+    @Override
+    public void enterSelectIntoStatement(PlSqlParser.SelectIntoStatementContext ctx) {
+        AstNode node = new AstNode(ConstructType.SELECT_INTO, ctx.getText(), ctx.start.getLine());
+        node.setAttribute("table", ctx.ID().getText());
+        node.setAttribute("into", ctx.idList().getText());
+        nodes.add(node);
+    }
+
+    @Override
+    public void enterInsertStatement(PlSqlParser.InsertStatementContext ctx) {
+        AstNode node = new AstNode(ConstructType.INSERT_STMT, ctx.getText(), ctx.start.getLine());
+        node.setAttribute("table", ctx.ID().getText());
+        nodes.add(node);
+    }
+
+    @Override
+    public void enterUpdateStatement(PlSqlParser.UpdateStatementContext ctx) {
+        AstNode node = new AstNode(ConstructType.UPDATE_STMT, ctx.getText(), ctx.start.getLine());
+        node.setAttribute("table", ctx.ID(0).getText());
+        nodes.add(node);
+    }
+
+    @Override
+    public void enterDeleteStatement(PlSqlParser.DeleteStatementContext ctx) {
+        AstNode node = new AstNode(ConstructType.DELETE_STMT, ctx.getText(), ctx.start.getLine());
+        node.setAttribute("table", ctx.ID().getText());
+        nodes.add(node);
+    }
+
+    @Override
     public void enterVarDeclSimple(PlSqlParser.VarDeclSimpleContext ctx) {
         AstNode node = new AstNode(ConstructType.VARIABLE_DECLARATION, ctx.getText(), ctx.start.getLine());
         node.setAttribute("varName", ctx.ID().getText());
@@ -85,6 +139,14 @@ public class AstBuilder extends PlSqlParserBaseListener {
     @Override
     public void enterGotoStatement(PlSqlParser.GotoStatementContext ctx) {
         nodes.add(new AstNode(ConstructType.GOTO, ctx.getText(), ctx.start.getLine()));
+    }
+
+    @Override
+    public void enterTriggerDecl(PlSqlParser.TriggerDeclContext ctx) {
+        AstNode node = new AstNode(ConstructType.PROCEDURE_DEF, ctx.getText(), ctx.start.getLine());
+        node.setAttribute("name", ctx.ID().getText());
+        if (ctx.block() != null) node.setAttribute("blockCtx", ctx.block());
+        nodes.add(node);
     }
 
     @Override

@@ -12,6 +12,7 @@ public class AstNode {
     private final int lineNumber;
     private final List<AstNode> children;
     private final Map<String, String> attributes;
+    private final Map<String, Object> objectAttributes;
 
     public AstNode(ConstructType constructType, String text, int lineNumber) {
         this.constructType = constructType;
@@ -19,6 +20,7 @@ public class AstNode {
         this.lineNumber = lineNumber;
         this.children = new ArrayList<>();
         this.attributes = new HashMap<>();
+        this.objectAttributes = new HashMap<>();
     }
 
     public void addChild(AstNode child) {
@@ -29,8 +31,16 @@ public class AstNode {
         attributes.put(key, value);
     }
 
+    public void setAttribute(String key, Object value) {
+        objectAttributes.put(key, value);
+    }
+
     public String getAttribute(String key) {
         return attributes.get(key);
+    }
+
+    public Object getObjectAttribute(String key) {
+        return objectAttributes.get(key);
     }
 
     public ConstructType getConstructType() { return constructType; }

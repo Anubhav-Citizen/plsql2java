@@ -96,11 +96,53 @@ public class DdlFileParser {
         return null;
     }
 
-    /** Splits DDL content into individual statements on '/' or ';' delimiters. */
+    /**
+     * Splits DDL content into individual object statements.
+     * Handles both SQL*Plus '/' terminators and semicolon-terminated files.
+     * PL/SQL blocks (PACKAGE, PROCEDURE, FUNCTION, TRIGGER) are kept intact
+     * by tracking BEGIN/END nesting depth.
+     */
     List<String> tokenize(String content) {
-        // Split on lines that contain only '/' (Oracle SQL*Plus delimiter) or on ';'
-        String[] parts = content.split("(?m)^\\s*/\\s*$|;");
-        return Arrays.asList(parts);
+        // First try: split on lines containing only '/'
+        String[] slashBlocks = content.split("(?m)^\\s*/\\s*$");
+        if (slashBlocks.length > 1) {
+            List<String> statements = new ArrayList<>();
+            for (String block : slashBlocks) {
+                String trimmed = block.trim();
+                if (!trimmed.isEmpty()) statements.add(trimmed);
+            }
+            return statements;
+        }
+
+        // No '/' delimiters — split by tracking BEGIN/END depth
+        List<String> statements = new ArrayList<>();
+        StringBuilder current = new StringBuilder();
+        int depth = 0;
+
+        String[] lines = content.split("\n");
+        for (String line : lines) {
+            String trimmedLine = line.trim();
+            String upperLine = trimmedLine.toUpperCase();
+            current.append(line).append("\n");
+
+            // Increment depth on BEGIN (but not END ... BEGIN patterns)
+            if (upperLine.matches(".*\\bBEGIN\\b\\s*")) depth++;
+
+            // Only decrement on bare END; or END name; — NOT on END IF, END LOOP, END CASE
+            if (upperLine.matches("END\\s*;") || upperLine.matches("END\\s+\\w+\\s*;")) {
+                depth = Math.max(0, depth - 1);
+            }
+
+            // Statement ends when depth returns to 0 on a semicolon line
+            if (trimmedLine.endsWith(";") && depth == 0) {
+                String stmt = current.toString().trim();
+                if (!stmt.isEmpty()) statements.add(stmt);
+                current.setLength(0);
+            }
+        }
+        String remaining = current.toString().trim();
+        if (!remaining.isEmpty()) statements.add(remaining);
+        return statements;
     }
 
     /** Classifies a DDL statement and returns an OracleObject, or null if not a supported type. */
@@ -126,7 +168,7 @@ public class DdlFileParser {
         if (m.find()) return makeObject(m.group(1), OracleObjectType.FUNCTION, null, statement);
 
         m = DdlPatterns.TRIGGER.matcher(statement);
-        if (m.find()) return makeObject(m.group(1), OracleObjectType.TRIGGER, null, statement);
+        if (m.find()) return makeObject(m.group(1), OracleObjectType.TRIGGER, null, statement.substring(m.start()));
 
         m = DdlPatterns.VIEW.matcher(statement);
         if (m.find()) return makeObject(m.group(1), OracleObjectType.VIEW, null, statement);

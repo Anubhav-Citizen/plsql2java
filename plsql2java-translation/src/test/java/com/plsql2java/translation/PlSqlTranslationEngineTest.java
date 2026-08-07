@@ -122,7 +122,145 @@ class PlSqlTranslationEngineTest {
                 "CREATE OR REPLACE PROCEDURE GOTO_PROC IS BEGIN GOTO end_proc; <<end_proc>> NULL; END;");
         TranslationResult result = engine.translate(obj);
         assertThat(result).isNotNull();
-        // GOTO should produce at least one flagged construct
-        // (parse may or may not match depending on grammar subset — result must not throw)
+    }
+
+    @Test
+    void translate_pkgCustomer_producesProcedureDefNodes() {
+        // Actual source from discovery-result.json
+        String spec = "CREATE OR REPLACE PACKAGE PKG_CUSTOMER\n" +
+                "AS\n" +
+                "TYPE CUSTOMER_REC IS RECORD\n" +
+                "(\n" +
+                "    ID NUMBER,\n" +
+                "    NAME VARCHAR2(100),\n" +
+                "    STATUS VARCHAR2(20)\n" +
+                ");\n" +
+                "TYPE CUSTOMER_TABLE IS TABLE OF CUSTOMER%ROWTYPE;\n" +
+                "PROCEDURE ADD_CUSTOMER\n" +
+                "(\n" +
+                "    P_NAME VARCHAR2,\n" +
+                "    P_EMAIL VARCHAR2,\n" +
+                "    P_PHONE VARCHAR2,\n" +
+                "    P_INCOME NUMBER\n" +
+                ");\n" +
+                "PROCEDURE UPDATE_STATUS\n" +
+                "(\n" +
+                "    P_CUSTOMER_ID NUMBER,\n" +
+                "    P_STATUS VARCHAR2\n" +
+                ");\n" +
+                "FUNCTION GET_TOTAL_CUSTOMERS\n" +
+                "RETURN NUMBER;\n" +
+                "FUNCTION GET_CUSTOMER_STATUS\n" +
+                "(\n" +
+                "    P_CUSTOMER_ID NUMBER\n" +
+                ")\n" +
+                "RETURN VARCHAR2;\n" +
+                "PROCEDURE GET_CUSTOMERS\n" +
+                "(\n" +
+                "    P_CURSOR OUT SYS_REFCURSOR\n" +
+                ");\n" +
+                "END PKG_CUSTOMER;";
+
+        String body = "CREATE OR REPLACE PACKAGE BODY PKG_CUSTOMER\n" +
+                "AS\n" +
+                "PROCEDURE ADD_CUSTOMER\n" +
+                "(\n" +
+                "    P_NAME VARCHAR2,\n" +
+                "    P_EMAIL VARCHAR2,\n" +
+                "    P_PHONE VARCHAR2,\n" +
+                "    P_INCOME NUMBER\n" +
+                ")\n" +
+                "IS\n" +
+                "BEGIN\n" +
+                "    INSERT INTO CUSTOMER\n" +
+                "    (\n" +
+                "        CUSTOMER_NAME,\n" +
+                "        EMAIL,\n" +
+                "        PHONE,\n" +
+                "        ANNUAL_INCOME\n" +
+                "    )\n" +
+                "    VALUES\n" +
+                "    (\n" +
+                "        P_NAME,\n" +
+                "        P_EMAIL,\n" +
+                "        P_PHONE,\n" +
+                "        P_INCOME\n" +
+                "    );\n" +
+                "END;\n" +
+                "PROCEDURE UPDATE_STATUS\n" +
+                "(\n" +
+                "    P_CUSTOMER_ID NUMBER,\n" +
+                "    P_STATUS VARCHAR2\n" +
+                ")\n" +
+                "IS\n" +
+                "BEGIN\n" +
+                "    UPDATE CUSTOMER\n" +
+                "       SET STATUS=P_STATUS,\n" +
+                "           UPDATED_DATE=SYSDATE\n" +
+                "     WHERE CUSTOMER_ID=P_CUSTOMER_ID;\n" +
+                "END;\n" +
+                "FUNCTION GET_TOTAL_CUSTOMERS\n" +
+                "RETURN NUMBER\n" +
+                "IS\n" +
+                "V_COUNT NUMBER;\n" +
+                "BEGIN\n" +
+                "SELECT COUNT(*) INTO V_COUNT FROM CUSTOMER;\n" +
+                "RETURN V_COUNT;\n" +
+                "END;\n" +
+                "FUNCTION GET_CUSTOMER_STATUS\n" +
+                "(\n" +
+                "P_CUSTOMER_ID NUMBER\n" +
+                ")\n" +
+                "RETURN VARCHAR2\n" +
+                "IS\n" +
+                "V_STATUS CUSTOMER.STATUS%TYPE;\n" +
+                "BEGIN\n" +
+                "SELECT STATUS INTO V_STATUS FROM CUSTOMER WHERE CUSTOMER_ID=P_CUSTOMER_ID;\n" +
+                "RETURN V_STATUS;\n" +
+                "EXCEPTION\n" +
+                "WHEN NO_DATA_FOUND THEN\n" +
+                "RETURN 'NOT FOUND';\n" +
+                "END;\n" +
+                "PROCEDURE GET_CUSTOMERS\n" +
+                "(\n" +
+                "P_CURSOR OUT SYS_REFCURSOR\n" +
+                ")\n" +
+                "IS\n" +
+                "BEGIN\n" +
+                "OPEN P_CURSOR FOR SELECT * FROM CUSTOMER;\n" +
+                "END;\n" +
+                "END PKG_CUSTOMER;";
+
+        OracleObject obj = new OracleObject("PKG_CUSTOMER", OracleObjectType.PACKAGE, "DEMO", spec);
+        obj.setSourceBody(body);
+
+        TranslationResult result = engine.translate(obj);
+        assertThat(result).isNotNull();
+
+        // Must have NO UNKNOWN constructs (no parse errors)
+        String unknownDetails = result.getConstructResults().stream()
+                .filter(r -> r.getConstructType() == com.plsql2java.translation.model.ConstructType.UNKNOWN)
+                .map(r -> "  line " + r.getLineNumber() + ": "
+                        + (r.getAstNode() != null ? r.getAstNode().getText() : r.getFlagReason()))
+                .collect(java.util.stream.Collectors.joining("\n"));
+        long unknownCount = result.getConstructResults().stream()
+                .filter(r -> r.getConstructType() == com.plsql2java.translation.model.ConstructType.UNKNOWN)
+                .count();
+        assertThat(unknownCount).as("Parse errors (UNKNOWN constructs) found:\n" + unknownDetails).isEqualTo(0);
+
+        // Must have PROCEDURE_DEF and FUNCTION_DEF nodes
+        long procCount = result.getConstructResults().stream()
+                .filter(r -> r.getConstructType() == com.plsql2java.translation.model.ConstructType.PROCEDURE_DEF
+                          || r.getConstructType() == com.plsql2java.translation.model.ConstructType.FUNCTION_DEF)
+                .count();
+        assertThat(procCount).as("Expected procedure/function nodes").isGreaterThanOrEqualTo(5);
+
+        // JavaIR must have per-procedure methods (not just fallback execute())
+        assertThat(result.getJavaIR()).isNotNull();
+        assertThat(result.getJavaIR().getMethods()).isNotEmpty();
+        assertThat(result.getJavaIR().getMethods().stream()
+                .anyMatch(m -> m.getMethodName().equals("execute")))
+                .as("Should not fall back to execute() method")
+                .isFalse();
     }
 }

@@ -1,4 +1,5 @@
 C:\project\repo\plsql2java\plsql2java-translation\src\main\java\com\plsql2java\translation\model\FlaggedConstruct.java
+C:\project\repo\plsql2java\plsql2java-translation\src\main\java\com\plsql2java\translation\rules\SelectIntoRule.java
 C:\project\repo\plsql2java\plsql2java-translation\src\main\java\com\plsql2java\translation\rules\ExplicitCursorRule.java
 C:\project\repo\plsql2java\plsql2java-translation\src\main\java\com\plsql2java\translation\rules\BulkCollectRule.java
 C:\project\repo\plsql2java\plsql2java-translation\src\main\java\com\plsql2java\translation\model\OracleExceptionMapping.java
@@ -6,7 +7,9 @@ C:\project\repo\plsql2java\plsql2java-translation\src\main\java\com\plsql2java\t
 C:\project\repo\plsql2java\plsql2java-translation\src\main\java\com\plsql2java\translation\rules\ImplicitCursorForRule.java
 C:\project\repo\plsql2java\plsql2java-translation\src\main\java\com\plsql2java\translation\model\TranslationStatus.java
 C:\project\repo\plsql2java\plsql2java-translation\src\main\java\com\plsql2java\translation\engine\PlSqlTranslationEngine.java
+C:\project\repo\plsql2java\plsql2java-translation\src\main\java\com\plsql2java\translation\rules\ProcedureDefRule.java
 C:\project\repo\plsql2java\plsql2java-translation\src\main\java\com\plsql2java\translation\engine\TranslationRuleRegistryInitializer.java
+C:\project\repo\plsql2java\plsql2java-translation\src\main\java\com\plsql2java\translation\rules\InsertStmtRule.java
 C:\project\repo\plsql2java\plsql2java-translation\src\main\java\com\plsql2java\translation\rules\BuiltinFunctionRule.java
 C:\project\repo\plsql2java\plsql2java-translation\src\main\java\com\plsql2java\translation\model\JavaMethodIR.java
 C:\project\repo\plsql2java\plsql2java-translation\src\main\java\com\plsql2java\translation\rules\ExceptionHandlerRule.java
@@ -15,6 +18,8 @@ C:\project\repo\plsql2java\plsql2java-translation\src\main\java\com\plsql2java\t
 C:\project\repo\plsql2java\plsql2java-translation\target\generated-sources\antlr4\com\plsql2java\translation\PlSqlParserListener.java
 C:\project\repo\plsql2java\plsql2java-translation\src\main\java\com\plsql2java\translation\model\JavaIR.java
 C:\project\repo\plsql2java\plsql2java-translation\src\main\java\com\plsql2java\translation\model\ConstructTranslationResult.java
+C:\project\repo\plsql2java\plsql2java-translation\src\main\java\com\plsql2java\translation\rules\FunctionDefRule.java
+C:\project\repo\plsql2java\plsql2java-translation\src\main\java\com\plsql2java\translation\rules\UpdateStmtRule.java
 C:\project\repo\plsql2java\plsql2java-translation\src\main\java\com\plsql2java\translation\engine\TranslationMappingLoader.java
 C:\project\repo\plsql2java\plsql2java-translation\src\main\java\com\plsql2java\translation\rules\RefCursorRule.java
 C:\project\repo\plsql2java\plsql2java-translation\target\generated-sources\antlr4\com\plsql2java\translation\PlSqlParserBaseListener.java
