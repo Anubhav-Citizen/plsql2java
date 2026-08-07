@@ -244,6 +244,12 @@ public class MigrationOrchestratorService {
 
     private GenerationContext buildGenerationContext(MigrationConfig config) {
         String targetPackage = config.getTargetPackage() != null ? config.getTargetPackage() : "com.example";
+        String rawSource = "";
+        if (config.getDdlFiles() != null && !config.getDdlFiles().isEmpty()) {
+            rawSource = config.getDdlFiles().stream()
+                    .map(p -> { try { return java.nio.file.Files.readString(p); } catch (Exception e) { return ""; } })
+                    .collect(java.util.stream.Collectors.joining("\n"));
+        }
         return new GenerationContext(
                 config.getMigrationId(),
                 targetPackage,
@@ -251,7 +257,8 @@ public class MigrationOrchestratorService {
                 config.getOutputDir().resolve("generated"),
                 "org.postgresql.Driver",
                 config.getConfidenceThreshold(),
-                config.getSchemaName() != null ? config.getSchemaName() : "SCHEMA"
+                config.getSchemaName() != null ? config.getSchemaName() : "SCHEMA",
+                rawSource
         );
     }
 

@@ -7,11 +7,14 @@ com\plsql2java\web\model\JdbcConfigRequest.class
 com\plsql2java\web\progress\SseEmitterRegistry.class
 com\plsql2java\web\service\MigrationJobRegistry.class
 com\plsql2java\web\service\CredentialStore.class
+com\plsql2java\web\progress\SseEmitterRegistry$BufferedEvent.class
 com\plsql2java\web\model\GenerateRequest.class
+com\plsql2java\web\progress\WebProgressListener$ProgressPayload.class
 com\plsql2java\web\controller\GlobalExceptionHandler.class
 com\plsql2java\web\controller\MigrationController.class
 com\plsql2java\web\service\FileUploadService$FileTooLargeException.class
 com\plsql2java\web\service\MigrationJobRegistry$JobNotFoundException.class
+com\plsql2java\web\service\MigrationJobRunner.class
 com\plsql2java\web\packaging\ZipPackager.class
 com\plsql2java\web\progress\WebProgressListener.class
 com\plsql2java\web\service\FileUploadService.class

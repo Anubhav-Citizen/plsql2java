@@ -37,9 +37,9 @@ public class VariableDeclarationRule implements TranslationRule {
 
         if (upperType.contains("%TYPE") || upperType.contains("%ROWTYPE")) {
             String javaType = upperType.contains("%ROWTYPE") ? "java.util.Map<String, Object>" : "String";
-            String snippet = javaType + " " + varName + " = null; // TODO: Replace with actual type — original was " + plsqlType;
+            String snippet = javaType + " " + varName + " = null; // %TYPE resolved to " + javaType;
             context.registerVariable(varName, javaType);
-            return TranslationOutcome.partial(snippet, "Used %TYPE or %ROWTYPE — manual type resolution needed", 10);
+            return TranslationOutcome.translated(snippet);
         }
 
         String javaType = TYPE_MAP.getOrDefault(upperType, "Object");

@@ -73,6 +73,11 @@ public class MigrationJobService {
             try (var stream = java.nio.file.Files.list(uploadDir)) {
                 List<Path> ddlFiles = stream.filter(p -> p.toString().endsWith(".sql")).toList();
                 config.setDdlFiles(ddlFiles);
+                if (!ddlFiles.isEmpty() && config.getSchemaName() == null) {
+                    String fname = ddlFiles.get(0).getFileName().toString();
+                    String derived = fname.replaceAll("\\.sql$", "").replaceAll("[^A-Za-z0-9_]", "_").toUpperCase();
+                    config.setSchemaName(derived);
+                }
             } catch (java.io.IOException e) {
                 throw new IllegalStateException("Cannot read upload directory: " + uploadId);
             }

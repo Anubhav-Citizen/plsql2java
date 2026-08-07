@@ -8,23 +8,45 @@ options { tokenVocab = PlSqlLexer; }
 
 // Top-level unit
 compilationUnit
-    : (packageSpec | packageBody | procedureDecl | functionDecl)* EOF
+    : (createOrReplace? (packageSpec | packageBody | procedureDecl | functionDecl) | triggerDecl | anonymousBlock)* EOF
+    ;
+
+createOrReplace
+    : CREATE (OR REPLACE)?
     ;
 
 packageSpec
-    : PACKAGE ID IS packageSpecItem* END ID? SEMI
+    : PACKAGE ID (IS | AS) packageSpecItem* END ID? SEMI
+    ;
+
+typeDecl
+    : TYPE ID IS (RECORD LPAREN typedIdList RPAREN | TABLE OF dataType (INDEX BY dataType)?) SEMI
     ;
 
 packageBody
-    : PACKAGE BODY ID IS (procedureDecl | functionDecl | variableDecl)* END ID? SEMI
+    : PACKAGE BODY ID (IS | AS) (procedureDecl | functionDecl | variableDecl)* END ID? SEMI
     ;
 
 procedureDecl
-    : PROCEDURE ID LPAREN paramList? RPAREN (IS | AS) declareSection? block
+    : PROCEDURE ID LPAREN paramList RPAREN (IS | AS) declareSection? block
+    | PROCEDURE ID (IS | AS) declareSection? block
     ;
 
 functionDecl
-    : FUNCTION ID LPAREN paramList? RPAREN RETURN dataType (IS | AS) declareSection? block
+    : FUNCTION ID LPAREN paramList RPAREN RETURN dataType (IS | AS) declareSection? block
+    | FUNCTION ID RETURN dataType (IS | AS) declareSection? block
+    ;
+
+triggerDecl
+    : TRIGGER ID triggerEvent? (IS | AS)? declareSection? block
+    ;
+
+triggerEvent
+    : ~(BEGIN | IS | AS | DECLARE)+
+    ;
+
+anonymousBlock
+    : DECLARE? declareSection? block
     ;
 
 paramList
@@ -33,6 +55,7 @@ paramList
 
 param
     : ID (IN | OUT | IN OUT)? dataType (ASSIGN expr)?
+    | ID (IN | OUT | IN OUT)? SYS_REFCURSOR
     ;
 
 declareSection
@@ -49,11 +72,12 @@ cursorDecl
     ;
 
 dataType
-    : VARCHAR2 LPAREN NUMBER_LIT RPAREN
+    : VARCHAR2 (LPAREN NUMBER_LIT RPAREN)?
     | NUMBER_KW (LPAREN NUMBER_LIT (COMMA NUMBER_LIT)? RPAREN)?
     | DATE_KW
     | BOOLEAN_KW
     | INTEGER_KW
+    | SYS_REFCURSOR
     | ID (DOT ID)? (PERCENT (TYPE | ROWTYPE))?
     ;
 
@@ -77,15 +101,18 @@ exceptionName
 packageSpecItem
     : procedureSpec
     | functionSpec
+    | typeDecl
     | variableDecl
     ;
 
 procedureSpec
-    : PROCEDURE ID LPAREN paramList? RPAREN SEMI
+    : PROCEDURE ID LPAREN paramList RPAREN SEMI
+    | PROCEDURE ID SEMI
     ;
 
 functionSpec
-    : FUNCTION ID LPAREN paramList? RPAREN RETURN dataType SEMI
+    : FUNCTION ID LPAREN paramList RPAREN RETURN dataType SEMI
+    | FUNCTION ID RETURN dataType SEMI
     ;
 
 statement
@@ -103,6 +130,10 @@ statement
     | raiseStatement
     | gotoStatement
     | dbmsOutputStatement
+    | selectIntoStatement
+    | insertStatement
+    | updateStatement
+    | deleteStatement
     | assignStatement
     | returnStatement
     | callStatement
@@ -137,7 +168,8 @@ cursorForStatement
     ;
 
 openStatement
-    : OPEN ID SEMI
+    : OPEN ID FOR selectStmt SEMI
+    | OPEN ID SEMI
     ;
 
 fetchStatement
@@ -161,6 +193,22 @@ dmlStatement
     : insertStmt
     | updateStmt
     | deleteStmt
+    ;
+
+selectIntoStatement
+    : SELECT selectExprList INTO idList FROM ID (WHERE condition)? SEMI
+    ;
+
+insertStatement
+    : INSERT INTO ID (LPAREN idList RPAREN)? VALUES LPAREN exprList RPAREN SEMI
+    ;
+
+updateStatement
+    : UPDATE ID SET ID EQ expr (COMMA ID EQ expr)* (WHERE condition)? SEMI
+    ;
+
+deleteStatement
+    : DELETE FROM ID (WHERE condition)? SEMI
     ;
 
 insertStmt
@@ -189,7 +237,7 @@ dbmsOutputStatement
     ;
 
 assignStatement
-    : ID (DOT ID)? ASSIGN expr SEMI
+    : (COLON (NEW | OLD | ID) DOT)? ID (DOT ID)? ASSIGN expr SEMI
     ;
 
 returnStatement
@@ -205,11 +253,17 @@ nullStatement
     ;
 
 selectStmt
-    : SELECT exprList FROM ID (WHERE condition)?
+    : SELECT selectExprList FROM ID (WHERE condition)?
+    ;
+
+selectExprList
+    : STAR
+    | exprList
     ;
 
 condition
-    : expr ((EQ | NEQ | LT | GT | LE | GE) expr)?
+    : expr IS NOT? NULL_
+    | expr ((EQ | NEQ | LT | GT | LE | GE) expr)
     | condition AND condition
     | condition OR condition
     | NOT condition
@@ -221,8 +275,9 @@ expr
     | NULL_
     | TRUE_
     | FALSE_
-    | ID (DOT ID)? (LPAREN exprList? RPAREN)?
-    | expr (PLUS | MINUS | STAR | SLASH) expr
+    | COLON (NEW | OLD | ID) DOT ID
+    | ID (DOT ID)? (LPAREN (exprList | STAR)? RPAREN)?
+    | expr (PLUS | MINUS | STAR | SLASH | CONCAT) expr
     | LPAREN expr RPAREN
     ;
 
@@ -232,6 +287,10 @@ exprList
 
 idList
     : ID (COMMA ID)*
+    ;
+
+typedIdList
+    : ID dataType (COMMA ID dataType)*
     ;
 
 

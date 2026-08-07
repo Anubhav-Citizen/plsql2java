@@ -3,10 +3,6 @@ package ${packageName}.service;
 <#list imports as imp>
 import ${imp};
 </#list>
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 /**
  * Translated from PL/SQL: ${schemaName}.${objectName}
@@ -19,19 +15,18 @@ public class ${className}Service {
 <#list fields as field>
     private final ${field};
 </#list>
+<#if fields?has_content>
 
     public ${className}Service(<#list fields as field>${field}<#sep>, </#sep></#list>) {
 <#list fieldNames as name>
         this.${name} = ${name};
 </#list>
     }
+</#if>
 
 <#list methods as method>
     /**
      * Translated from PL/SQL: ${schemaName}.${objectName}.${method.methodName}
-<#if method.javadoc?has_content>
-     * ${method.javadoc}
-</#if>
      */
 <#list method.annotations as ann>
     ${ann}

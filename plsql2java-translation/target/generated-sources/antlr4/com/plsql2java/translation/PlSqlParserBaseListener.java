@@ -29,6 +29,18 @@ public class PlSqlParserBaseListener implements PlSqlParserListener {
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
+	@Override public void enterCreateOrReplace(PlSqlParser.CreateOrReplaceContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void exitCreateOrReplace(PlSqlParser.CreateOrReplaceContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
 	@Override public void enterPackageSpec(PlSqlParser.PackageSpecContext ctx) { }
 	/**
 	 * {@inheritDoc}
@@ -36,6 +48,18 @@ public class PlSqlParserBaseListener implements PlSqlParserListener {
 	 * <p>The default implementation does nothing.</p>
 	 */
 	@Override public void exitPackageSpec(PlSqlParser.PackageSpecContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void enterTypeDecl(PlSqlParser.TypeDeclContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void exitTypeDecl(PlSqlParser.TypeDeclContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *
@@ -72,6 +96,42 @@ public class PlSqlParserBaseListener implements PlSqlParserListener {
 	 * <p>The default implementation does nothing.</p>
 	 */
 	@Override public void exitFunctionDecl(PlSqlParser.FunctionDeclContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void enterTriggerDecl(PlSqlParser.TriggerDeclContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void exitTriggerDecl(PlSqlParser.TriggerDeclContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void enterTriggerEvent(PlSqlParser.TriggerEventContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void exitTriggerEvent(PlSqlParser.TriggerEventContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void enterAnonymousBlock(PlSqlParser.AnonymousBlockContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void exitAnonymousBlock(PlSqlParser.AnonymousBlockContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *
@@ -401,6 +461,54 @@ public class PlSqlParserBaseListener implements PlSqlParserListener {
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
+	@Override public void enterSelectIntoStatement(PlSqlParser.SelectIntoStatementContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void exitSelectIntoStatement(PlSqlParser.SelectIntoStatementContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void enterInsertStatement(PlSqlParser.InsertStatementContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void exitInsertStatement(PlSqlParser.InsertStatementContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void enterUpdateStatement(PlSqlParser.UpdateStatementContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void exitUpdateStatement(PlSqlParser.UpdateStatementContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void enterDeleteStatement(PlSqlParser.DeleteStatementContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void exitDeleteStatement(PlSqlParser.DeleteStatementContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
 	@Override public void enterInsertStmt(PlSqlParser.InsertStmtContext ctx) { }
 	/**
 	 * {@inheritDoc}
@@ -533,6 +641,18 @@ public class PlSqlParserBaseListener implements PlSqlParserListener {
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
+	@Override public void enterSelectExprList(PlSqlParser.SelectExprListContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void exitSelectExprList(PlSqlParser.SelectExprListContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
 	@Override public void enterCondition(PlSqlParser.ConditionContext ctx) { }
 	/**
 	 * {@inheritDoc}
@@ -576,6 +696,18 @@ public class PlSqlParserBaseListener implements PlSqlParserListener {
 	 * <p>The default implementation does nothing.</p>
 	 */
 	@Override public void exitIdList(PlSqlParser.IdListContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void enterTypedIdList(PlSqlParser.TypedIdListContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void exitTypedIdList(PlSqlParser.TypedIdListContext ctx) { }
 
 	/**
 	 * {@inheritDoc}

@@ -9,6 +9,7 @@ public class ConstructTranslationResult {
     private final String flagReason;
     private final String recommendation;
     private final int confidencePenalty;
+    private AstNode astNode;
 
     public ConstructTranslationResult(ConstructType constructType, int lineNumber, TranslationOutcome outcome) {
         this.constructType = constructType;
@@ -19,6 +20,9 @@ public class ConstructTranslationResult {
         this.recommendation = outcome.getRecommendation();
         this.confidencePenalty = outcome.getConfidencePenalty();
     }
+
+    public void setAstNode(AstNode node) { this.astNode = node; }
+    public AstNode getAstNode() { return astNode; }
 
     public ConstructType getConstructType() { return constructType; }
     public int getLineNumber() { return lineNumber; }
