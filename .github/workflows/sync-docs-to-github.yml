@@ -1,0 +1,92 @@
+name: Sync Local Docs → GitHub Discussions
+
+on:
+  push:
+    branches: [main, master]
+    paths:
+      - 'aidlc-docs/**/*.md'
+  workflow_dispatch:
+
+jobs:
+  sync-docs:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Install dependencies
+        run: pip install requests
+
+      - name: Enable Discussions and sync docs
+        env:
+          GH_TOKEN: ${{ secrets.GH_PAT }}
+          REPO: ${{ github.repository }}
+        run: |
+          python3 - <<'PYEOF'
+          import sys, time
+          sys.path.insert(0, ".github/scripts")
+          import doc_sync as d
+
+          # ── 1. Enable Discussions on the repo ────────────────────────────
+          d.enable_discussions()
+
+          # ── 2. Get repo node ID ───────────────────────────────────────────
+          repo_id = d.get_repo_id()
+          print(f"Repo ID: {repo_id}")
+
+          # ── 3. Ensure all required categories exist ───────────────────────
+          categories = d.ensure_categories(repo_id)
+          print(f"Categories ready: {list(categories.keys())}")
+
+          # ── 4. Collect all aidlc-docs markdown files ──────────────────────
+          docs = d.collect_docs()
+          print(f"Found {len(docs)} doc files to sync")
+
+          # ── 5. Upsert each doc as a Discussion ────────────────────────────
+          created = updated = skipped = 0
+
+          for doc in docs:
+              cat      = doc["category"]
+              cat_name = cat["name"]
+              cat_id   = categories.get(cat_name)
+              if not cat_id:
+                  print(f"  SKIP (no category ID): {doc['title']}")
+                  skipped += 1
+                  continue
+
+              # Get existing discussions in this category
+              existing = d.get_discussions(repo_id, cat_id)
+
+              body = (
+                  f"> 📁 **Source**: `{doc['path']}`\n"
+                  f"> 🔄 **Auto-synced** from local aidlc-docs on push\n\n"
+                  f"---\n\n{doc['body']}"
+              )
+
+              if doc["title"] in existing:
+                  ex = existing[doc["title"]]
+                  if ex["body"] != body:
+                      d.update_discussion(ex["id"], doc["title"], body)
+                      print(f"  Updated: [{cat_name}] {doc['title']}")
+                      updated += 1
+                  else:
+                      skipped += 1
+              else:
+                  disc = d.create_discussion(repo_id, cat_id, doc["title"], body)
+                  if disc:
+                      print(f"  Created: [{cat_name}] {doc['title']} → #{disc.get('number')}")
+                      created += 1
+                  else:
+                      print(f"  ERROR creating: {doc['title']}")
+                  time.sleep(0.3)
+
+          print(f"\nDone — created: {created}, updated: {updated}, skipped: {skipped}")
+          PYEOF
